@@ -10,6 +10,7 @@ import NewJSONDialog from "@/components/Dialogs/NewJSONDialog";
 import { TMenu, TMenuItem } from "../TMenu";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { ItemListItem } from "./ItemListItem";
 
 interface Props {
   jsonItem: FolderStructureType[number]
@@ -28,7 +29,6 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
   }
 
   const onOpenDialogHandler = () => {
-    console.log("ABRIENDO DIALOGO")
     setOpenDialog(true)
   }
 
@@ -74,7 +74,6 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
             </Stack>
           }
           dense
-
           disablePadding
         >
           <ListItemIcon sx={{ minWidth: 24 }}>{parentIcon}</ListItemIcon>
@@ -92,24 +91,7 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
 
 
       {jsonItem.children.map((child) => (
-        <Collapse
-          in={open}
-          timeout="auto"
-          unmountOnExit
-          key={child.name}
-        >
-          <List component="div" disablePadding>
-            <ListItemButton sx={{ pl: 4 }}>
-              <ListItemIcon sx={{ minWidth: 24 }}>{childrenIcon}</ListItemIcon>
-              <ListItemText primary={child.name} primaryTypographyProps={{
-                noWrap: true,
-                variant: "caption",
-                color: SURFACE
-              }} />
-            </ListItemButton>
-
-          </List>
-        </Collapse>
+        <ItemListItem key={child.id} {...child} in={open} icon={childrenIcon} />
       ))}
       <NewJSONDialog title={`Agregar json para ${jsonItem.parent_name}`} open={openDialog} onClose={onCloseDialogHandler} />
     </>
