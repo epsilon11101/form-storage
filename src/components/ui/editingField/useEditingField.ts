@@ -9,6 +9,7 @@ type editedTextValueHookType = {
 
 export const useEditingField = ({ initialValue, onEnter }: editedTextValueHookType) => {
 
+
   const [value, setValue] = useState(initialValue)
   const [isEditing, setIsEditing] = useState(false)
 
@@ -19,9 +20,13 @@ export const useEditingField = ({ initialValue, onEnter }: editedTextValueHookTy
   }
 
   const onKeyEnterHandler = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter" || event.key === "Escape") {
-      setIsEditing(false)
+    if (event.key === "Enter") {
       onEnter?.(value)
+      setIsEditing(false)
+    }
+    else if (event.key === "Escape") {
+      setIsEditing(false)
+      setValue(initialValue)
     }
     event.stopPropagation()
   }
