@@ -1,4 +1,5 @@
 import type { Form } from "./forms"
+import { unWrap } from "./helpers"
 import { axiosClient } from "./queryClient"
 
 
@@ -11,10 +12,9 @@ export interface Group {
 }
 
 
-export const getGroups = async (): Promise<{ data: Group[] }> => {
+export const getGroups = async (): Promise<Group[]> => {
   try {
-    const { data } = await axiosClient.get("/group")
-    return data
+    return await unWrap(axiosClient.get("/group"))
   }
   catch (error) {
     throw error
@@ -22,22 +22,36 @@ export const getGroups = async (): Promise<{ data: Group[] }> => {
 }
 
 export const postGroup = async (name: string) => {
-  const res = await axiosClient.post("/group", { name })
-  return res.data
+  try {
+    return await unWrap(axiosClient.post("/group", { name }))
+  }
+  catch (error) {
+    throw error
+  }
 }
 
 export const getGroup = async (id: string) => {
-  const res = await axiosClient.get(`/group/${id}`)
-  return res.data;
+  try {
+    return await unWrap(axiosClient.get(`/group/${id}`))
+  } catch (error) {
+    throw error
+  }
 }
 
-export const putGroup = async ({ id, name }: { id: string, name: string }) => {
-  const res = await axiosClient.put(`/group/${id}`, { name })
-  return res.data;
+export const putGroup = async ({ id, name }: { id: string, name: string }): Promise<Group> => {
+  try {
+    return await unWrap(axiosClient.put(`/group/${id}`, { name }))
+  }
+  catch (error) {
+    throw error
+  }
 }
 
-export const deleteGroup = async (id: string) => {
-  const res = await axiosClient.delete(`/group/${id}`)
-  return res.data;
+export const deleteGroup = async (id: string): Promise<void> => {
+  try {
+    return await unWrap(axiosClient.delete(`/group/${id}`))
+  } catch (error) {
+    throw error
+  }
 }
 
