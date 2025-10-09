@@ -10,11 +10,8 @@ const groupQueryKeys = {
 };
 
 
-type GroupsResponse = { data: Group[] }
-
-
 export const useGetGroups = () => {
-  return useSuspenseQuery<GroupsResponse>({
+  return useSuspenseQuery<Group[]>({
     queryKey: groupQueryKeys.all,
     queryFn: getGroups,
   });
@@ -39,7 +36,7 @@ export const useGetGroup = (id: string | undefined) => {
 
 export const useEditGroup = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutation<Group, Error, Pick<Group, "id" | "name">>({
     mutationFn: putGroup,
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: groupQueryKeys.all });
@@ -50,8 +47,8 @@ export const useEditGroup = () => {
 
 export const useDeleteGroup = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: deleteGroup,
+  return useMutation<void, Error, Pick<Group, "id">>({
+    mutationFn: ({ id }) => deleteGroup(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: groupQueryKeys.all });
     }
