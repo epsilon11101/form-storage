@@ -136,7 +136,7 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
                     ) : (
                       <>
                         <ListItemText
-                          primary={deleteStatus ? "Eliminando" : value}
+                          primary={deleteStatus ? "ELIMINANDO" : value}
                           primaryTypographyProps={{
                             noWrap: true,
                             variant: "caption",
