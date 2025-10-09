@@ -39,6 +39,7 @@ export const FooterVersions = () => {
       <FooterVersionItem value="version 3" title="version 3" currentSelected={version} setVersion={setVersion} />
       <FooterVersionItem value="version 4" title="version 4" currentSelected={version} setVersion={setVersion} />
       <FooterVersionItem value="version 5" title="version 5" currentSelected={version} setVersion={setVersion} />
+
     </ToggleButtonGroup>
 
   )
