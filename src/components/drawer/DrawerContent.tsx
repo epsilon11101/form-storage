@@ -10,9 +10,9 @@ export const DrawerContent = () => {
   const { data, isPending } = useGetGroups()
 
   const fetchedData = useMemo(() => {
-    if (!data?.data) return []
+    if (!data) return []
 
-    return data.data.reduce((acc, group) => {
+    return data.reduce((acc, group) => {
       const { forms, name, id } = group
       acc.push({
         id,
