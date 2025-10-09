@@ -12,7 +12,7 @@ import { TTooltip } from "@/components/ui/TTooltip";
 
 const MainPage = () => {
   const [openFormDialog, setOpenFormDialog] = useState(false);
-  const fileContent = useReadDocument((state) => state.fileContent)
+  const { schema, uiSchema, formData } = useReadDocument()
   const onCloseDialogHandler = () => {
     setOpenFormDialog(false)
   }
@@ -36,7 +36,7 @@ const MainPage = () => {
 
                 <ResizablePanel defaultSize={60} maxSize={60}>
                   <div className="h-full overflow-auto">
-                    <CodeSection code={fileContent || "{}"} />
+                    <CodeSection code={JSON.stringify(schema, null, 2)} />
                   </div>
                 </ResizablePanel>
 
@@ -46,7 +46,7 @@ const MainPage = () => {
                   <ResizablePanelGroup direction="horizontal">
                     <ResizablePanel>
                       <div className="h-full overflow-auto">
-                        <CodeSection code="{}" />
+                        <CodeSection code={JSON.stringify(uiSchema, null, 2)} />
                       </div>
                     </ResizablePanel>
 
@@ -54,7 +54,7 @@ const MainPage = () => {
 
                     <ResizablePanel>
                       <div className="h-full overflow-auto">
-                        <CodeSection code="{}" />
+                        <CodeSection code={JSON.stringify(formData, null, 2)} />
                       </div>
                     </ResizablePanel>
                   </ResizablePanelGroup>
@@ -64,7 +64,7 @@ const MainPage = () => {
 
             <ResizableHandle withHandle />
 
-            <ResizablePanel defaultSize={65} className="p-2" style={{ position: "relative" }}>
+            <ResizablePanel defaultSize={25} className="p-2" style={{ position: "relative" }}>
               <TTooltip title="Pantalla Completa" placement="left">
                 <Box component="span" sx={{ position: "absolute", right: 0, top: 0, zIndex: 1000 }}>
                   <IconButton onClick={onOpenDialogHandler}>
