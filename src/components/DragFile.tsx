@@ -10,7 +10,7 @@ import { ESTADOS_INFO } from '@/theme/colors'
 
 import TLoading from './ui/TLoading'
 import UploadIcon from './ui/icons/UploadIcon'
-import { readFileAsText } from '@/utils/utils'
+import { parseSchemaString, readFileAsText } from '@/utils/utils'
 import useReadDocument from '@/stores/useReadDocument'
 
 interface Props extends Omit<DropzoneProps, 'onDrop' | 'maxSize'> {
@@ -20,7 +20,7 @@ interface Props extends Omit<DropzoneProps, 'onDrop' | 'maxSize'> {
 
 const DragFile: FC<Props> = ({ maxSize = 10, onCloseDialog, ...rest }) => {
 
-  const setFileContent = useReadDocument(state => state.setFileContent)
+  const { setFileSchema, setFileUiSchema, setFormData } = useReadDocument()
 
   const [isPending, startTransition] = useTransition()
 
@@ -36,7 +36,10 @@ const DragFile: FC<Props> = ({ maxSize = 10, onCloseDialog, ...rest }) => {
       startTransition(async () => {
         try {
           const fileContent = await readFileAsText(uploadFile)
-          setFileContent(fileContent)
+          const { schema, uiSchema } = parseSchemaString(fileContent)
+          setFileSchema(schema ?? {})
+          setFileUiSchema(uiSchema ?? {})
+          setFormData({})
           onCloseDialog && onCloseDialog({}, "escapeKeyDown")
         } catch (error) {
           console.error('Error al procesar el archivo o la petición:', error)
