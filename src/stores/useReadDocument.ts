@@ -1,12 +1,22 @@
 import { create } from "zustand"
+import type { RJSFSchema, UiSchema } from "@rjsf/utils"
 
 interface ReadDocumentInterface {
-  fileContent: string | null;
-  setFileContent: (content: string) => void
+  schema: RJSFSchema
+  uiSchema: UiSchema
+  formData: Record<string, any>
+  setFileSchema: (schema: RJSFSchema) => void
+  setFileUiSchema: (uischema: UiSchema) => void
+  setFormData: (FormData: Record<string, any>) => void
 }
 
 const useReadDocument = create<ReadDocumentInterface>((set) => ({
-  fileContent: null,
-  setFileContent: (content) => set({ fileContent: content })
+  uiSchema: {},
+  schema: {},
+  formData: {},
+  setFileSchema: (schema) => set({ schema }),
+  setFileUiSchema: (uiSchema) => set({ uiSchema }),
+  setFormData: (formData) => set({ formData })
 }))
+
 export default useReadDocument  
