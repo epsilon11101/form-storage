@@ -11,8 +11,8 @@ const FormSection = () => {
 
   return (
     <TForm
-      schema={schema}
-      uiSchema={uiSchema}
+      schema={schema || {}}
+      uiSchema={uiSchema || {}}
       validator={validator}
       noHtml5Validate
       liveValidate={false}
