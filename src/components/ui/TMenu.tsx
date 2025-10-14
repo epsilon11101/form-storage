@@ -11,14 +11,22 @@ type RenderProps = {
 }
 
 interface TMenuProps {
+  onTriggerClick?: () => void
   children: (props: RenderProps) => ReactNode
 }
 
 
-export const TMenu: FC<TMenuProps> = ({ children }) => {
+export const TMenu: FC<TMenuProps> = ({ onTriggerClick, children }) => {
+
+
+  const onClick = (e: MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation()
+    onTriggerClick?.()
+  }
+
   return <PopupState variant="popover" popupId="version-submenu">
     {(popupState) => (
-      <Box component="div" onClick={e => e.stopPropagation()}>
+      <Box component="div" onClick={onClick}>
         <Box color="primary"  {...bindTrigger(popupState)} >
           <MoreVertIcon fontSize="medium" color="primary" />
         </Box>

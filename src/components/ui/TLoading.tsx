@@ -6,7 +6,7 @@ import {
 } from '@mui/material'
 import type { FC } from 'react'
 
-
+//TODO : remove this component
 interface TLoadingProps extends StackProps {
   progressProps?: CircularProgressProps
 }

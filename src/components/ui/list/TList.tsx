@@ -18,10 +18,16 @@ const TList: FC<Props> = ({ id,
   childrenIcon = <ArticleIcon fontSize="small" />,
   ...rest }) => {
   const folderStructure = useCallback(() => {
+
     return jsonFolders.map((parent) => (
-      <ItemList key={parent.parent_name} jsonItem={parent} parentIcon={parentIcon} childrenIcon={childrenIcon} />
+      <ItemList key={parent.parent_name} jsonItem={parent} parentIcon={parentIcon} childrenIcon={childrenIcon}
+
+      />
     ));
   }, [jsonFolders]);
+
+
+  //TODO: add virtualize list
 
   return (
     <List {...rest}>

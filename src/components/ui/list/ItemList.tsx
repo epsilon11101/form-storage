@@ -15,6 +15,7 @@ import { useEditingField } from "../editingField/useEditingField";
 import { TEditingField } from "../editingField/TEditingField";
 import { useDeleteGroup, useEditGroup } from "@/api/hooks/useGroups";
 import { TProgress } from "../TProgress";
+import useGetIDForm from "@/stores/useFormStore";
 
 interface Props {
   jsonItem: FolderStructureType[number]
@@ -25,9 +26,10 @@ interface Props {
 
 const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
 
-
+  const { setFormID, setFormName } = useGetIDForm()
   const { mutate: onEditGroupMutation, isPending } = useEditGroup()
   const { mutate: onDeleteGroupMutation, isPending: isDeletePending, isError, isSuccess } = useDeleteGroup()
+  const [selectedID, setSelectedID] = useState<string | null>(null)
 
   const deleteStatus = (isSuccess || isDeletePending) && !isError
 
@@ -36,14 +38,17 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
     onEnter: onMutateHandler
   })
 
-
-
-  const { } = useDeleteGroup()
-
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [openDialog, setOpenDialog] = useState(false)
 
+  const setFormDataInfoHandler = () => {
+    setFormName(jsonItem.parent_name)
+    setFormID(jsonItem.id)
+
+  }
+
   const handleClick = () => {
+    setFormDataInfoHandler()
     setOpen(!open);
   }
 
@@ -72,6 +77,11 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
   const onDeleteHandler = () => {
     onDeleteGroupMutation({
       id: jsonItem.id
+    }, {
+      onSuccess: () => {
+        setFormName("Editor de formas precodificadas")
+        setFormID(null)
+      }
     })
   }
 
@@ -87,7 +97,7 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
             !isEditing ?
               <Stack direction="row" gap={1} alignItems="center" width="100%" >
                 {isPending ? null :
-                  <TMenu>
+                  <TMenu onTriggerClick={setFormDataInfoHandler}>
                     {({ popupStateHandler, bindMenuProps }) =>
                       <Menu {...bindMenuProps}>
                         <TMenuItem
@@ -164,10 +174,13 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
 
       {
         jsonItem.children.map((child) => (
-          <ItemListItem key={child.id} {...child} in={open} icon={childrenIcon} />
+          <ItemListItem key={child.id} {...child} in={open} icon={childrenIcon}
+            selected={selectedID === child.id}
+            onSelect={() => { setSelectedID(child.id) }}
+          />
         ))
       }
-      < NewJSONDialog title={`Agregar json para ${jsonItem.parent_name}`
+      < NewJSONDialog title={`${jsonItem.parent_name}`
       } open={openDialog} onClose={onCloseDialogHandler} />
     </>
 

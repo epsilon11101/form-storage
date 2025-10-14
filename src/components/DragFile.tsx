@@ -1,7 +1,7 @@
-import { Box, Grid, Stack, Typography, type DialogProps } from '@mui/material'
+import { Box, Button, Grid, Stack, Typography, type DialogProps } from '@mui/material'
 import Dropzone, { type DropzoneProps, type FileRejection } from 'react-dropzone'
 
-import { type FC, useCallback, useTransition } from 'react'
+import { type Dispatch, type FC, type MouseEvent, type SetStateAction, useCallback, useTransition } from 'react'
 
 import { ESTADOS_INFO } from '@/theme/colors'
 
@@ -12,17 +12,26 @@ import TLoading from './ui/TLoading'
 import UploadIcon from './ui/icons/UploadIcon'
 import { parseSchemaString, readFileAsText } from '@/utils/utils'
 import useReadDocument from '@/stores/useReadDocument'
+import { useCreateForm } from '@/api/hooks/useForms'
+import useGetIDForm from '@/stores/useFormStore'
+import ErrorIcon from '@mui/icons-material/Error';
+
 
 interface Props extends Omit<DropzoneProps, 'onDrop' | 'maxSize'> {
   maxSize?: number
-  onCloseDialog?: DialogProps["onClose"]
+  onCloseHandler: () => void,
+  hasError: boolean,
+  setHasError: Dispatch<SetStateAction<boolean>>
 }
 
-const DragFile: FC<Props> = ({ maxSize = 10, onCloseDialog, ...rest }) => {
+const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandler, ...rest }) => {
 
+  const { formID } = useGetIDForm()
   const { setFileSchema, setFileUiSchema, setFormData } = useReadDocument()
-
+  const { mutate: uploadFileMutation } = useCreateForm()
   const [isPending, startTransition] = useTransition()
+
+
 
   const onDropHandler = useCallback(
     async (acceptedFiles: File[]) => {
@@ -32,23 +41,47 @@ const DragFile: FC<Props> = ({ maxSize = 10, onCloseDialog, ...rest }) => {
 
 
       if (!uploadFile) return;
+      if (!formID) return;
 
       startTransition(async () => {
+
+
         try {
-          const fileContent = await readFileAsText(uploadFile)
-          const { schema, uiSchema } = parseSchemaString(fileContent)
+          const { name: fileName, fileContent } = await readFileAsText(uploadFile)
+          const { schema, uiSchema, hasError } = parseSchemaString(fileContent)
+
+          if (hasError) {
+            setHasError(true)
+            return;
+          }
+
+          uploadFileMutation(
+            {
+              groupID: formID,
+              name: fileName,
+              data: {
+                propertyName: fileContent,
+              },
+            },
+          )
+
+
+
           setFileSchema(schema ?? {})
           setFileUiSchema(uiSchema ?? {})
           setFormData({})
-          onCloseDialog && onCloseDialog({}, "escapeKeyDown")
+
+          onCloseHandler()
+
         } catch (error) {
+          setHasError(true)
           console.error('Error al procesar el archivo o la petición:', error)
         }
       })
 
 
     },
-    []
+    [formID, uploadFileMutation]
   )
   const onDropRejected = (fileRejections: FileRejection[]) => {
     const hasInvalidType = fileRejections.some(
@@ -57,6 +90,11 @@ const DragFile: FC<Props> = ({ maxSize = 10, onCloseDialog, ...rest }) => {
 
     console.log(hasInvalidType);
 
+  }
+
+  const onResetHandler = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    setHasError(false)
   }
 
 
@@ -79,43 +117,63 @@ const DragFile: FC<Props> = ({ maxSize = 10, onCloseDialog, ...rest }) => {
                 justifyContent="center"
                 direction="column"
                 rowGap={4}
-
                 sx={{
                   padding: 2,
-                  border: `dashed 3px ${ESTADOS_INFO}`,
-                  bgcolor: (theme) => theme.palette.focus.main,
+                  border: theme => `dashed 3px ${hasError ? theme.palette.error.main : ESTADOS_INFO}`,
+                  bgcolor: (theme) => !hasError ? theme.palette.focus.main : "#e8999970",
                 }}
                 {...getRootProps()}
               >
-                <Box component="input" {...getInputProps()} />
-                <UploadIcon
-                  color="primary"
-                  sx={{
-                    fontSize: 100,
-                  }}
-                />
-                <Stack direction="column" rowGap={2} alignItems="center">
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      textTransform: 'none !important',
-                    }}
-                  >
-                    {isDragActive ? 'Soltar proyecto' : 'Arrastrar proyecto'}
-                  </Typography>
-                  <Typography
-                    variant="textTitles"                  >
-                    Solo se admiten archivos JSON
-                  </Typography>
-                </Stack>
+                {hasError ? (
+                  <>
+                    <Box />
+                    <ErrorIcon
+                      color="error"
+                      sx={{ fontSize: 100 }}
+                    />
+                    <Stack direction="column" rowGap={2} alignItems="center">
+                      <Typography variant="h5" sx={{ textTransform: 'none !important' }} color="error">
+                        Error al leer el archivo
+                      </Typography>
+                      <Typography variant="textTitles" color="error">
+                        No tiene el formato correcto{' '}
+                        <code>
+                          {'{'}
+                          "schema": "...",
+                          "uiSchema": "..."
+                          {'}'}
+                        </code>
+                      </Typography>
+                      <Button variant="contained" color="error" onClick={onResetHandler}>Reintentar</Button>
+                    </Stack>
+                  </>
+                ) : (
+                  <>
+                    <Box component="input" {...getInputProps()} />
+                    <UploadIcon
+                      color="primary"
+                      sx={{ fontSize: 100 }}
+                    />
+                    <Stack direction="column" rowGap={2} alignItems="center">
+                      <Typography variant="h5" sx={{ textTransform: 'none !important' }}>
+                        {isDragActive ? 'Soltar proyecto' : 'Arrastrar proyecto'}
+                      </Typography>
+                      <Typography variant="textTitles">
+                        Solo se admiten archivos txt
+                      </Typography>
+                    </Stack>
+                  </>
+                )}
               </Stack>
+
             )
           }}
         </Dropzone>
       ) : (
         <TLoading width="100%" height="30vh" />
-      )}
-    </Grid>
+      )
+      }
+    </Grid >
   )
 }
 
