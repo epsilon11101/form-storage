@@ -29,11 +29,11 @@ const TDialog: FC<Props> = ({ title, open, onClose, children, dialogContentProps
     keepMounted
     onClose={onClose}
     aria-describedby="new-project-dialog"
-    {...rest}
     maxWidth='md'
     slotProps={{
       paper: { sx: { borderRadius: 2 } }
     }}
+    {...rest}
 
   >
     {withCloseButton &&
