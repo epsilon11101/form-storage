@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { deleteGroup, getGroup, getGroups, postGroup, putGroup, type Group } from "../groups.ts";
 
-const groupQueryKeys = {
+export const groupQueryKeys = {
   all: ["groups"] as const,
   lists: () => [...groupQueryKeys.all, "list"] as const,
   list: (filters?: string) => [...groupQueryKeys.lists(), { filters }] as const,
