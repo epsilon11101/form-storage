@@ -20,6 +20,8 @@ import { type ReactNode } from "react"
 import { QueryBoundary } from '@/providers/QueryBoundary';
 import { DrawerContent } from './DrawerContent';
 import DrawerContentFooter from './DrawerContentFooter';
+import useGetIDForm from '@/stores/useFormStore';
+
 
 interface TDrawerProps {
   children: ReactNode
@@ -29,6 +31,7 @@ interface TDrawerProps {
 
 export default function TDrawer({ children }: TDrawerProps) {
 
+  const { formName } = useGetIDForm()
   const theme = useTheme();
   const { drawerWidth, isDrawerOpen, setDrawerOpen } = useDrawer()
 
@@ -67,7 +70,7 @@ export default function TDrawer({ children }: TDrawerProps) {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap component="div" color="black">
-              Editor de formas precodificadas
+              {formName || "Editor de formas precodificadas"}
             </Typography>
           </Toolbar>
         </AppBar>
