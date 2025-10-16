@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Stack, Typography, type DialogProps } from '@mui/material'
+import { Box, Button, Grid, Stack, Typography } from '@mui/material'
 import Dropzone, { type DropzoneProps, type FileRejection } from 'react-dropzone'
 
 import { type Dispatch, type FC, type MouseEvent, type SetStateAction, useCallback, useTransition } from 'react'
@@ -15,6 +15,7 @@ import useReadDocument from '@/stores/useReadDocument'
 import { useCreateForm } from '@/api/hooks/useForms'
 import useGetIDForm from '@/stores/useFormStore'
 import ErrorIcon from '@mui/icons-material/Error';
+import { TProgress } from './ui/TProgress'
 
 
 interface Props extends Omit<DropzoneProps, 'onDrop' | 'maxSize'> {
@@ -26,7 +27,7 @@ interface Props extends Omit<DropzoneProps, 'onDrop' | 'maxSize'> {
 
 const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandler, ...rest }) => {
 
-  const { formID } = useGetIDForm()
+  const { formParentID, setFormID, formParentName, setFormParentName } = useGetIDForm()
   const { setFileSchema, setFileUiSchema, setFormData } = useReadDocument()
   const { mutate: uploadFileMutation } = useCreateForm()
   const [isPending, startTransition] = useTransition()
@@ -41,7 +42,7 @@ const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandl
 
 
       if (!uploadFile) return;
-      if (!formID) return;
+      if (!formParentID) return;
 
       startTransition(async () => {
 
@@ -57,12 +58,18 @@ const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandl
 
           uploadFileMutation(
             {
-              groupID: formID,
+              groupID: formParentID,
               name: fileName,
               data: {
                 propertyName: fileContent,
               },
             },
+            {
+              onSuccess: ({ id, groupName }) => {
+                setFormID(id)
+                setFormParentName(groupName || "error obteniendo nombre")
+              }
+            }
           )
 
 
@@ -81,7 +88,7 @@ const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandl
 
 
     },
-    [formID, uploadFileMutation]
+    [formParentID, uploadFileMutation]
   )
   const onDropRejected = (fileRejections: FileRejection[]) => {
     const hasInvalidType = fileRejections.some(
@@ -100,7 +107,16 @@ const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandl
 
   return (
     <Grid container size="grow" justifyContent="center" alignItems="center" maxHeight={300}>
-      {!isPending ? (
+      <TProgress isLoading={isPending} sx={{
+        height: "340px"
+      }}
+        progressProps={{
+          size: "50px",
+          sx: {
+            color: theme => theme.palette.secondary.main
+          }
+        }}
+      >
         <Dropzone
           onDrop={(acceptedFiles) => {
             onDropHandler(acceptedFiles)
@@ -169,10 +185,7 @@ const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandl
             )
           }}
         </Dropzone>
-      ) : (
-        <TLoading width="100%" height="30vh" />
-      )
-      }
+      </TProgress>
     </Grid >
   )
 }
