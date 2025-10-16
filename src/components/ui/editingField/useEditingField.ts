@@ -25,10 +25,14 @@ export const useEditingField = ({ initialValue, onEnter }: editedTextValueHookTy
       setIsEditing(false)
     }
     else if (event.key === "Escape") {
-      setIsEditing(false)
-      setValue(initialValue)
+      onCancelHandler()
     }
     event.stopPropagation()
+  }
+
+  const onCancelHandler = () => {
+    setIsEditing(false)
+    setValue(initialValue)
   }
 
   return {
@@ -36,7 +40,8 @@ export const useEditingField = ({ initialValue, onEnter }: editedTextValueHookTy
     isEditing,
     setIsEditing,
     onChangeHandler,
-    onKeyEnterHandler
+    onKeyEnterHandler,
+    onCancelHandler
   }
 
 }
