@@ -1,4 +1,4 @@
-import { useState, type FC, type ReactNode } from "react"
+import { useMemo, useState, type FC, type ReactNode } from "react"
 import type { FolderStructureType } from "./types"
 import { ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, Stack } from "@mui/material";
 
@@ -26,14 +26,15 @@ interface Props {
 
 const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
 
-  const { setFormID, setFormName } = useGetIDForm()
+
+  const { setFormParentID, setFormParentName, formID, setFormID } = useGetIDForm()
   const { mutate: onEditGroupMutation, isPending } = useEditGroup()
   const { mutate: onDeleteGroupMutation, isPending: isDeletePending, isError, isSuccess } = useDeleteGroup()
-  const [selectedID, setSelectedID] = useState<string | null>(null)
+
 
   const deleteStatus = (isSuccess || isDeletePending) && !isError
 
-  const { isEditing, setIsEditing, onChangeHandler, onKeyEnterHandler, value } = useEditingField({
+  const { isEditing, setIsEditing, onChangeHandler, onKeyEnterHandler, onCancelHandler, value } = useEditingField({
     initialValue: jsonItem.parent_name,
     onEnter: onMutateHandler
   })
@@ -42,8 +43,7 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
   const [openDialog, setOpenDialog] = useState(false)
 
   const setFormDataInfoHandler = () => {
-    setFormName(jsonItem.parent_name)
-    setFormID(jsonItem.id)
+    setFormParentID(jsonItem.id)
 
   }
 
@@ -70,7 +70,10 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
       name: value
     }, {
       onError: () => setIsEditing(false),
-      onSuccess: () => setIsEditing(false)
+      onSuccess: () => {
+        setIsEditing(false)
+        setFormParentName(value)
+      }
     })
   }
 
@@ -79,11 +82,22 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
       id: jsonItem.id
     }, {
       onSuccess: () => {
-        setFormName("Editor de formas precodificadas")
-        setFormID(null)
+        setFormParentName(null)
+        setFormParentID(null)
       }
     })
   }
+
+  const itemListItems = jsonItem.children.map((child) => (
+    <ItemListItem key={child.id} {...child} in={open} icon={childrenIcon}
+      parent={{
+        id: jsonItem.id,
+        name: jsonItem.parent_name
+      }}
+      selected={formID === child.id}
+      onSelect={() => { setFormID(child.id) }}
+    />
+  ))
 
 
 
@@ -113,9 +127,7 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
                           onClick={onEditingHandler}
                           icon={<EditIcon color="primary" fontSize="small" />}
                           title="Editar"
-                          sx={{ "&:hover": { bgcolor: "#eaf6fb" } }}
-                        />
-                        <TMenuItem
+                          sx={{ "&:hover": { bgcolor: "#eaf6fb" } }} /> <TMenuItem
                           popupState={popupStateHandler}
                           onClick={onDeleteHandler}
                           icon={<DeleteIcon color="error" fontSize="small" />}
@@ -129,57 +141,46 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
           dense
           disablePadding
         > {
-            <>
-              {
-                isPending ? (
-                  <TProgress />
+            <TProgress isLoading={isPending}>
+              <>
+                <ListItemIcon sx={{ minWidth: 24 }}>{parentIcon}</ListItemIcon>
+
+                {isEditing ? (
+                  <TEditingField
+                    value={value}
+                    onChange={onChangeHandler}
+                    onKeyDown={onKeyEnterHandler}
+                    onCancel={onCancelHandler}
+                  />
                 ) : (
                   <>
-                    <ListItemIcon sx={{ minWidth: 24 }}>{parentIcon}</ListItemIcon>
-
-                    {isEditing ? (
-                      <TEditingField
-                        value={value}
-                        onChange={onChangeHandler}
-                        onKeyDown={onKeyEnterHandler}
-                      />
+                    <ListItemText
+                      primary={deleteStatus ? "ELIMINANDO" : value}
+                      primaryTypographyProps={{
+                        noWrap: true,
+                        variant: "caption",
+                        width: 150,
+                        sx: {
+                          color: theme => deleteStatus ? theme.palette.error.main : SURFACE,
+                        }
+                      }}
+                    />
+                    {open ? (
+                      <ArrowDropDownIcon sx={{ color: OUTLINE_VARIANT }} />
                     ) : (
-                      <>
-                        <ListItemText
-                          primary={deleteStatus ? "ELIMINANDO" : value}
-                          primaryTypographyProps={{
-                            noWrap: true,
-                            variant: "caption",
-                            width: 150,
-                            sx: {
-                              color: theme => deleteStatus ? theme.palette.error.main : SURFACE,
-                            }
-                          }}
-                        />
-                        {open ? (
-                          <ArrowDropDownIcon sx={{ color: OUTLINE_VARIANT }} />
-                        ) : (
-                          <ArrowRightIcon sx={{ color: OUTLINE_VARIANT }} />
-                        )}
-                      </>
+                      <ArrowRightIcon sx={{ color: OUTLINE_VARIANT }} />
                     )}
                   </>
-                )
-              }
-            </>}
+                )}
+              </>
+            </TProgress>
+          }
         </ListItem>
 
       </ListItemButton >
 
 
-      {
-        jsonItem.children.map((child) => (
-          <ItemListItem key={child.id} {...child} in={open} icon={childrenIcon}
-            selected={selectedID === child.id}
-            onSelect={() => { setSelectedID(child.id) }}
-          />
-        ))
-      }
+      {itemListItems}
       < NewJSONDialog title={`${jsonItem.parent_name}`
       } open={openDialog} onClose={onCloseDialogHandler} />
     </>
