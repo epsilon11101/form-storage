@@ -5,10 +5,10 @@ interface ReadDocumentInterface {
   schema: RJSFSchema | null
   uiSchema: UiSchema | null
   formData: Record<string, any>
-  setFileSchema: (schema: RJSFSchema) => void
-  setFileUiSchema: (uischema: UiSchema) => void
+  isLoading: boolean
+  setFileSchema: (schema: RJSFSchema | null) => void
+  setFileUiSchema: (uischema: UiSchema | null) => void
   setFormData: (FormData: Record<string, any>) => void
-  isLoading: boolean,
   setIsLoading: (isLoading: boolean) => void
 }
 
@@ -16,11 +16,12 @@ const useReadDocument = create<ReadDocumentInterface>((set) => ({
   uiSchema: null,
   schema: null,
   formData: {},
+  isLoading: false,
   setFileSchema: (schema) => set({ schema }),
   setFileUiSchema: (uiSchema) => set({ uiSchema }),
   setFormData: (formData) => set({ formData }),
-  isLoading: false,
-  setIsLoading: (isLoading) => set({ isLoading })
+  setIsLoading: (isLoading) => set({ isLoading }),
+
 }))
 
 
