@@ -25,15 +25,15 @@ const MainPage = () => {
   return (
 
     <>
-
-      {
-        isLoading ? <TProgress progressProps={{
+      <TProgress
+        isLoading={isLoading}
+        progressProps={{
           size: "50px",
           sx: {
             color: theme => theme.palette.secondary.main
           }
-        }} /> :
-          schema ?
+        }}><>
+          {schema ?
             <Grid container spacing={2} height="100%" direction="column" wrap="nowrap" alignItems={"stretch"}>
               <Grid size={2} width="100%" >
                 <Header />
@@ -99,7 +99,10 @@ const MainPage = () => {
               </Box>
               <Typography variant="h3">No hay nada que mostrar</Typography>
             </Stack>
-      }
+          }
+        </>
+      </TProgress>
+
       <FullPageFormDialog title="" open={openFormDialog} onClose={onCloseDialogHandler} />
     </>
 
