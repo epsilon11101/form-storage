@@ -31,7 +31,7 @@ interface TDrawerProps {
 
 export default function TDrawer({ children }: TDrawerProps) {
 
-  const { formName } = useGetIDForm()
+  const { formParentName } = useGetIDForm()
   const theme = useTheme();
   const { drawerWidth, isDrawerOpen, setDrawerOpen } = useDrawer()
 
@@ -70,7 +70,7 @@ export default function TDrawer({ children }: TDrawerProps) {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap component="div" color="black">
-              {formName || "Editor de formas precodificadas"}
+              {formParentName || "Editor de formas precodificadas"}
             </Typography>
           </Toolbar>
         </AppBar>

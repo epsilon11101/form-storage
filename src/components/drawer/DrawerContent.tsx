@@ -27,9 +27,11 @@ export const DrawerContent = () => {
   }, [data])
 
 
-  return <>
-    {isPending ? <TProgress /> : <TList jsonFolders={fetchedData} />}
-  </>
+  return <TProgress isLoading={isPending}>
+    <TList jsonFolders={fetchedData} />
+  </TProgress>
+
+
 
 }
 
