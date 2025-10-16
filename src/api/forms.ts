@@ -5,6 +5,7 @@ export interface Form {
   id: string
   name: string
   groupID: string
+  groupName?: string
   data: {
     propertyName: string
   }
@@ -14,8 +15,9 @@ export interface Form {
 }
 
 type putFormBodyType = {
-  formID: string,
-} & Pick<Form, 'groupID' | 'name' | 'data'>;
+  formID: string
+} & Pick<Form, 'groupID' | 'name'> &
+  Partial<Pick<Form, 'data'>>
 
 type postFormBodyType = Omit<putFormBodyType, 'formID'>
 

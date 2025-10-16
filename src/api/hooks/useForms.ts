@@ -35,6 +35,7 @@ export const useUpdateForm = (): UseMutationResult<Form, Error, Parameters<typeo
     mutationFn: putForm,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: formQueryKeys.detail(data.id) })
+      queryClient.invalidateQueries({ queryKey: groupQueryKeys.all })
     },
   })
 }
@@ -46,6 +47,7 @@ export const useDeleteForm = (): UseMutationResult<Form, Error, string> => {
     onSuccess: (_, formID) => {
       queryClient.invalidateQueries({ queryKey: formQueryKeys.detail(formID) })
       queryClient.invalidateQueries({ queryKey: formQueryKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: groupQueryKeys.all })
     },
   })
 }
