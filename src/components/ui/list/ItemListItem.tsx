@@ -1,11 +1,23 @@
-import { formQueryKeys, useForm } from "@/api/hooks/useForms"
+import { formQueryKeys, useDeleteForm, useForm, useUpdateForm } from "@/api/hooks/useForms"
 import useReadDocument from "@/stores/useReadDocument"
 import { SURFACE } from "@/theme/colors"
 import { parseSchemaString } from "@/utils/utils"
-import { Collapse, List, ListItemButton, ListItemIcon, ListItemText, type CollapseProps } from "@mui/material"
+import { Collapse, List, ListItemButton, ListItemIcon, ListItemText, Menu, type CollapseProps } from "@mui/material"
 import { useQueryClient } from "@tanstack/react-query"
-import { useEffect, useState, type Dispatch, type FC, type ReactNode, type SetStateAction } from "react"
+import { useEffect, type FC, type ReactNode } from "react"
 
+import ClearIcon from '@mui/icons-material/Clear';
+import { TMenu, TMenuItem } from "../TMenu"
+import EditIcon from '@mui/icons-material/Edit';
+import { useEditingField } from "../editingField/useEditingField"
+import { TEditingField } from "../editingField/TEditingField"
+import useGetIDForm from "@/stores/useFormStore"
+import { TProgress } from "../TProgress"
+
+type parentProps = {
+  id: string,
+  name: string
+}
 
 interface ItemLisItemProps extends CollapseProps {
   selected: boolean,
@@ -13,19 +25,59 @@ interface ItemLisItemProps extends CollapseProps {
   icon: ReactNode
   name: string
   id: string
+  parent: parentProps
 }
 
 
 
-export const ItemListItem: FC<ItemLisItemProps> = ({ icon, id, name, selected = false, onSelect, ...rest }) => {
+export const ItemListItem: FC<ItemLisItemProps> = ({ icon, id, name, selected, parent, onSelect, ...rest }) => {
 
+  const { isEditing, setIsEditing, onChangeHandler, onKeyEnterHandler, onCancelHandler, value } = useEditingField({
+    initialValue: name,
+    onEnter: onUpdateHandler
+  })
+  const { mutate: updateForm, isPending: isUpdatePending } = useUpdateForm()
   const { data, refetch, isLoading } = useForm(id)
   const { setFileSchema, setFileUiSchema, setFormData, setIsLoading } = useReadDocument()
+  const { mutate: onDelete, isPending, isSuccess, isError } = useDeleteForm()
+  const { setFormParentName, setFormParentID, formParentID } = useGetIDForm()
+  const deleteStatus = (isSuccess || isPending) && !isError
   const queryClient = useQueryClient()
 
+
   const onClickHandler = async () => {
+    setFormParentName(parent.name)
+    setFormParentID(parent.id)
+    onSelect?.()
     queryClient.removeQueries({ queryKey: formQueryKeys.detail(id) })
     await refetch()
+  }
+
+  function onUpdateHandler() {
+
+    if (!formParentID) return
+    updateForm({
+      groupID: formParentID, formID: id, name: value,
+    }, {
+      onSuccess: () => {
+        setIsEditing(false)
+      }
+    })
+
+  }
+
+  const onDeleteHandler = () => {
+    onDelete(id, {
+      onSuccess: () => {
+        setFileSchema(null)
+        setFileUiSchema(null)
+        setFormData({})
+      }
+    })
+  }
+
+  const onEditHandler = () => {
+    setIsEditing(true)
   }
 
 
@@ -48,6 +100,9 @@ export const ItemListItem: FC<ItemLisItemProps> = ({ icon, id, name, selected = 
     setIsLoading(isLoading)
   }, [isLoading])
 
+
+
+
   return <Collapse
     timeout="auto"
     unmountOnExit
@@ -64,17 +119,63 @@ export const ItemListItem: FC<ItemLisItemProps> = ({ icon, id, name, selected = 
           '&:hover': {
             bgcolor: selected ? 'primary.dark' : 'action.hover',
           },
+          boxShadow: theme => selected ? `inset -4px 0 0 ${theme.palette.primary.main}` : "none"
         }}
       >
-        <ListItemIcon sx={{ minWidth: 24 }}>{icon}</ListItemIcon>
-        <ListItemText primary={name} primaryTypographyProps={{
-          noWrap: true,
-          variant: "caption",
-          color: SURFACE
-        }} />
+        {
+          isEditing ?
+            <TEditingField
+              value={value}
+              onChange={onChangeHandler}
+              onKeyDown={onKeyEnterHandler}
+              onCancel={onCancelHandler}
+            />
+            :
+            <TProgress isLoading={isUpdatePending}>
+              <ListItemIcon sx={{ minWidth: 24 }}>{icon}</ListItemIcon>
+              <ListItemText primary={deleteStatus ? "Eliminando" : name} primaryTypographyProps={{
+                noWrap: true,
+                variant: "caption",
+                sx: {
+                  color: theme => deleteStatus ? theme.palette.error.main : SURFACE
+                }
+              }} />
+              <TMenu slotProps={
+                {
+                  iconButtonProps: {
+                    disabled: !selected,
+                  },
+                  iconProps: {
+                    fontSize: "small",
+                    sx: {
+                      color: theme => selected ? theme.palette.primary.main : theme.palette.action.disabled
+                    }
+                  }
+                }
+              }>
+                {({ popupStateHandler, bindMenuProps }) =>
+                  <Menu {...bindMenuProps}>
+                    <TMenuItem
+                      popupState={popupStateHandler}
+                      onClick={onEditHandler}
+
+                      icon={<EditIcon color="primary" fontSize="small" />}
+                      title="Editar"
+                      sx={{ "&:hover": { bgcolor: "#eaf6fb" } }} />
+                    <TMenuItem
+                      popupState={popupStateHandler}
+                      onClick={onDeleteHandler}
+                      icon={<ClearIcon color="error" fontSize="small" />}
+                      title="Eliminar"
+                      sx={{ "&:hover": { bgcolor: " #fbeaea" } }} />
+                  </Menu>
+                }
+              </TMenu>
+            </TProgress>
+        }
       </ListItemButton>
 
     </List>
-  </Collapse>
+  </Collapse >
 
 }
