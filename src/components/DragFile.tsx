@@ -6,9 +6,6 @@ import { type Dispatch, type FC, type MouseEvent, type SetStateAction, useCallba
 import { ESTADOS_INFO } from '@/theme/colors'
 
 
-
-
-import TLoading from './ui/TLoading'
 import UploadIcon from './ui/icons/UploadIcon'
 import { parseSchemaString, readFileAsText } from '@/utils/utils'
 import useReadDocument from '@/stores/useReadDocument'
@@ -16,6 +13,7 @@ import { useCreateForm } from '@/api/hooks/useForms'
 import useGetIDForm from '@/stores/useFormStore'
 import ErrorIcon from '@mui/icons-material/Error';
 import { TProgress } from './ui/TProgress'
+import useGetFormVersion from '@/stores/useFormVersionsStore'
 
 
 interface Props extends Omit<DropzoneProps, 'onDrop' | 'maxSize'> {
@@ -27,7 +25,8 @@ interface Props extends Omit<DropzoneProps, 'onDrop' | 'maxSize'> {
 
 const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandler, ...rest }) => {
 
-  const { formParentID, setFormID, formParentName, setFormParentName } = useGetIDForm()
+  const { formParentID, setFormID, setFormParentName } = useGetIDForm()
+  const { setCurrentFormVersion } = useGetFormVersion()
   const { setFileSchema, setFileUiSchema, setFormData } = useReadDocument()
   const { mutate: uploadFileMutation } = useCreateForm()
   const [isPending, startTransition] = useTransition()
@@ -49,7 +48,7 @@ const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandl
 
         try {
           const { name: fileName, fileContent } = await readFileAsText(uploadFile)
-          const { schema, uiSchema, hasError } = parseSchemaString(fileContent)
+          const { schema, uiSchema, formData, hasError } = parseSchemaString(fileContent)
 
           if (hasError) {
             setHasError(true)
@@ -65,9 +64,10 @@ const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandl
               },
             },
             {
-              onSuccess: ({ id, groupName }) => {
+              onSuccess: ({ id, groupName, currentVersion }) => {
                 setFormID(id)
                 setFormParentName(groupName || "error obteniendo nombre")
+                setCurrentFormVersion(String(currentVersion))
               }
             }
           )
@@ -76,7 +76,7 @@ const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandl
 
           setFileSchema(schema ?? {})
           setFileUiSchema(uiSchema ?? {})
-          setFormData({})
+          setFormData(formData ?? {})
 
           onCloseHandler()
 

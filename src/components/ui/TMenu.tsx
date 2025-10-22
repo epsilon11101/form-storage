@@ -1,6 +1,6 @@
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Box, ListItemIcon, ListItemText, MenuItem, type MenuItemProps } from "@mui/material";
+import { Box, IconButton, ListItemIcon, ListItemText, MenuItem, type IconButtonProps, type MenuItemProps, type SvgIconProps } from "@mui/material";
 import type { FC, ReactNode, MouseEvent } from "react";
 import type { PopupState as InyectedProps } from "material-ui-popup-state/hooks";
 
@@ -13,10 +13,15 @@ type RenderProps = {
 interface TMenuProps {
   onTriggerClick?: () => void
   children: (props: RenderProps) => ReactNode
+  slotProps?: {
+    iconButtonProps: IconButtonProps
+    iconProps: SvgIconProps
+  }
+
 }
 
 
-export const TMenu: FC<TMenuProps> = ({ onTriggerClick, children }) => {
+export const TMenu: FC<TMenuProps> = ({ onTriggerClick, slotProps, children }) => {
 
 
   const onClick = (e: MouseEvent<HTMLDivElement>) => {
@@ -27,9 +32,9 @@ export const TMenu: FC<TMenuProps> = ({ onTriggerClick, children }) => {
   return <PopupState variant="popover" popupId="version-submenu">
     {(popupState) => (
       <Box component="div" onClick={onClick}>
-        <Box color="primary"  {...bindTrigger(popupState)} >
-          <MoreVertIcon fontSize="medium" color="primary" />
-        </Box>
+        <IconButton color="primary" {...slotProps?.iconButtonProps}  {...bindTrigger(popupState)} disableRipple >
+          <MoreVertIcon fontSize="medium" color="primary" {...slotProps?.iconProps} />
+        </IconButton>
         {children({ popupStateHandler: popupState, bindMenuProps: bindMenu(popupState) })}
       </Box>
     )}

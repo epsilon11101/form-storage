@@ -74,7 +74,7 @@ export default function FieldTemplate<
         required={required}
       >
         {displayLabel && rawDescription ? (
-          <Typography variant="caption" color="textSecondary" mb={1.5} sx={{ bgcolor: "red" }}>
+          <Typography variant="caption" color="textSecondary" mb={1.5}>
             {description}
           </Typography>
         ) : null}

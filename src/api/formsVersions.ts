@@ -26,7 +26,7 @@ export const getFormVersion = async (formID: string): Promise<FormVersion[]> => 
   }
 }
 
-type formVersionType = {
+export type formVersionType = {
   formID: string;
   sourceVersion: number;
   name: string;
@@ -49,7 +49,7 @@ export const postFormVersion = async ({
   }
 };
 
-type formVersionNumberType = {
+export type formVersionNumberType = {
   formID: string,
   versionNumber: string
 }
@@ -63,10 +63,10 @@ export const getFindVersionNumber = async ({ formID, versionNumber }: formVersio
   }
 }
 
-type putVersionNumberType = {
+export type putVersionNumberType = {
   formID: string,
   versionNumber: number,
-  name: FormVersion["data"]["name"]
+  name?: FormVersion["data"]["name"]
   data: FormVersion["data"]["data"]
 }
 
@@ -79,7 +79,7 @@ export const putVersionNumber = async ({ formID, versionNumber, name, data }: pu
   }
 }
 
-type putPublishVersionNumberType = {
+export type putPublishVersionNumberType = {
   formID: string,
   versionNumber: number
 }

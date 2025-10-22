@@ -12,16 +12,24 @@ import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArro
 import { DrawerHeader } from './DrawerHeader';
 import { AppBar } from './AppBar';
 import { Main } from './Main';
-import { Stack } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import Logo from '../ui/logo/Logo';
 import useDrawer from '@/stores/useDrawer';
 import DrawerFooter from './footer/DrawerFooter';
-import { type ReactNode } from "react"
+import { type ReactNode, type RefObject } from "react"
 import { QueryBoundary } from '@/providers/QueryBoundary';
 import { DrawerContent } from './DrawerContent';
 import DrawerContentFooter from './DrawerContentFooter';
 import useGetIDForm from '@/stores/useFormStore';
+import useReadDocument from '@/stores/useReadDocument';
+import { useUpdateFormVersion } from '@/api/hooks/useFormVersion';
+import useGetFormVersion from '@/stores/useFormVersionsStore';
+import { SaveIcon } from 'lucide-react';
+import { TProgress } from '../ui/TProgress';
+import { stringifyCode } from '@/utils/utils';
 
+import PrintIcon from '@mui/icons-material/Print';
+import { useReactToPrint } from 'react-to-print';
 
 interface TDrawerProps {
   children: ReactNode
@@ -34,16 +42,71 @@ export default function TDrawer({ children }: TDrawerProps) {
   const { formParentName } = useGetIDForm()
   const theme = useTheme();
   const { drawerWidth, isDrawerOpen, setDrawerOpen } = useDrawer()
+  const { formData, uiSchema, schema, isSaving, printRef } = useReadDocument()
+  const { isPending, mutate: updateVersion } = useUpdateFormVersion()
+  const { currentVersion } = useGetFormVersion()
+  const { formID } = useGetIDForm()
+
+  const onPrint = useReactToPrint({
+    contentRef: printRef as unknown as RefObject<HTMLElement>,
+    pageStyle: `
+  @page { size: A4; margin: 15mm; }
+  @media print {
+    body { -webkit-print-color-adjust: exact !important; }
+    .MuiDrawer-root, .MuiDrawer-paper { display: none !important; }
+  }
+`,
+
+
+  })
 
 
 
-  const handleDrawerOpen = () => {
-    setDrawerOpen(true);
-  };
+
+  const handleDrawerOpen =
+    () => {
+      setDrawerOpen(true);
+    };
 
   const handleDrawerClose = () => {
     setDrawerOpen(false);
   };
+
+
+  const isSavingIcon = isSaving || isPending ? <TProgress isLoading={isSaving}
+    progressProps={{
+      sx: {
+        color: theme => theme.palette.common.white
+      }
+    }
+    }
+  /> : <SaveIcon />
+
+  const isSavingText = isSaving || isPending ? "guardando" : "guardar"
+
+  const onPrintHandler = () => {
+    onPrint()
+  }
+
+
+
+  const onSaveHandler = () => {
+    const mergedData = {
+      "schema": schema,
+      "uiSchema": uiSchema,
+      "formData": formData
+    }
+    const stringifyData = stringifyCode(mergedData)
+
+    updateVersion({
+      formID: formID || "error",
+      versionNumber: Number(currentVersion),
+      data: {
+        propertyName: stringifyData || ""
+      }
+    })
+  }
+
 
 
 
@@ -68,10 +131,23 @@ export default function TDrawer({ children }: TDrawerProps) {
               ]}
             >
               <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap component="div" color="black">
-              {formParentName || "Editor de formas precodificadas"}
-            </Typography>
+            </IconButton>{
+              formParentName ?
+
+                <Stack direction="row" spacing={2} flex="1" >
+
+                  <Typography variant="h6" noWrap component="div" color="black" flex="4">
+                    {formParentName}
+                  </Typography>
+                  <Button variant="contained" size="small" color="primary" startIcon={isSavingIcon} onClick={onSaveHandler}>{isSavingText}</Button>
+                  <Button variant="contained" size="small" color="primary" startIcon={<PrintIcon />} onClick={onPrintHandler}>Imprimir</Button>
+
+                </Stack>
+                :
+                <Typography variant="h6" noWrap component="div" color="black" flex="4">
+                  {"Editor de formas precodificadas"}
+                </Typography>
+            }
           </Toolbar>
         </AppBar>
         <Drawer

@@ -13,6 +13,7 @@ import { useEditingField } from "../editingField/useEditingField"
 import { TEditingField } from "../editingField/TEditingField"
 import useGetIDForm from "@/stores/useFormStore"
 import { TProgress } from "../TProgress"
+import useGetFormVersion from "@/stores/useFormVersionsStore"
 
 type parentProps = {
   id: string,
@@ -40,17 +41,25 @@ export const ItemListItem: FC<ItemLisItemProps> = ({ icon, id, name, selected, p
   const { data, refetch, isLoading } = useForm(id)
   const { setFileSchema, setFileUiSchema, setFormData, setIsLoading } = useReadDocument()
   const { mutate: onDelete, isPending, isSuccess, isError } = useDeleteForm()
-  const { setFormParentName, setFormParentID, formParentID } = useGetIDForm()
+  const { setFormParentName, setFormParentID, formParentID, setFormID } = useGetIDForm()
+  const { setCurrentFormVersion } = useGetFormVersion()
   const deleteStatus = (isSuccess || isPending) && !isError
   const queryClient = useQueryClient()
 
 
   const onClickHandler = async () => {
+    console.log("ON CLICK")
     setFormParentName(parent.name)
     setFormParentID(parent.id)
+    setFormID(id)
     onSelect?.()
     queryClient.removeQueries({ queryKey: formQueryKeys.detail(id) })
-    await refetch()
+    const { data, error } = await refetch()
+    if (error) {
+      console.log("refetching error", error, JSON.stringify(data))
+      return
+    }
+    setCurrentFormVersion(String(data?.currentVersion))
   }
 
   function onUpdateHandler() {
@@ -85,10 +94,11 @@ export const ItemListItem: FC<ItemLisItemProps> = ({ icon, id, name, selected, p
     if (!data) return
     const updateContent = () => {
       const content = data.data.propertyName
-      const { schema, uiSchema } = parseSchemaString(content)
+      console.log(content)
+      const { schema, uiSchema, formData } = parseSchemaString(content)
       setFileSchema(schema ?? {})
       setFileUiSchema(uiSchema ?? {})
-      setFormData({})
+      setFormData(formData ?? {})
 
     }
 

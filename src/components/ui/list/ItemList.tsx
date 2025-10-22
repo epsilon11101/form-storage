@@ -1,4 +1,4 @@
-import { useMemo, useState, type FC, type ReactNode } from "react"
+import { useState, type FC, type ReactNode } from "react"
 import type { FolderStructureType } from "./types"
 import { ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, Stack } from "@mui/material";
 
@@ -16,6 +16,7 @@ import { TEditingField } from "../editingField/TEditingField";
 import { useDeleteGroup, useEditGroup } from "@/api/hooks/useGroups";
 import { TProgress } from "../TProgress";
 import useGetIDForm from "@/stores/useFormStore";
+import useReadDocument from "@/stores/useReadDocument";
 
 interface Props {
   jsonItem: FolderStructureType[number]
@@ -23,11 +24,12 @@ interface Props {
   childrenIcon?: ReactNode,
 }
 
-
+//TODO: solo puede seleccionar eliminar crear en el proyecto seleccionado por defecto
 const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
 
 
   const { setFormParentID, setFormParentName, formID, setFormID } = useGetIDForm()
+  const { resetSchema } = useReadDocument()
   const { mutate: onEditGroupMutation, isPending } = useEditGroup()
   const { mutate: onDeleteGroupMutation, isPending: isDeletePending, isError, isSuccess } = useDeleteGroup()
 
@@ -84,6 +86,7 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
       onSuccess: () => {
         setFormParentName(null)
         setFormParentID(null)
+        resetSchema()
       }
     })
   }

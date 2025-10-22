@@ -19,6 +19,8 @@ import CustomHourPicker from "./widgets/CustomHourPicker";
 import CheckboxWidget from "./widgets/CheckBoxWidget";
 import SelectWidget from "./widgets/SelectWidget";
 import ObjectFieldTemplate from "./templates/ObjectFieldTemplate";
+import ArrayFieldTemplate from "./templates/ArrayFieldTemplate";
+import ArrayFieldItemTemplate from "./templates/ArrayFieldItemTemplate";
 
 
 
@@ -32,7 +34,9 @@ function TFormTemplate<
     FieldTemplate,
     FieldHelpTemplate,
     FieldErrorTemplate,
-    ObjectFieldTemplate
+    ObjectFieldTemplate,
+    ArrayFieldTemplate,
+    ArrayFieldItemTemplate
   };
 }
 

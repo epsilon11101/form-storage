@@ -1,27 +1,41 @@
-import type { RJSFSchema } from "@rjsf/utils";
 import TForm from "../ui/rjsf/TForm";
 import Button from "@mui/material/Button";
-import { useEffect, useState } from "react";
 import validator from '@rjsf/validator-ajv8';
 import useReadDocument from "@/stores/useReadDocument";
+import { useEffect, useRef } from "react";
+import { Box } from "@mui/material";
 
 const FormSection = () => {
+  const formRef = useRef<HTMLDivElement | null>(null)
 
-  const { schema, uiSchema, formData, setFormData } = useReadDocument()
+  const { schema, uiSchema, formData, setFormData, setPrintRef } = useReadDocument()
+
+
+  useEffect(() => {
+    setPrintRef(formRef)
+  }, [formRef])
 
   return (
-    <TForm
-      schema={schema || {}}
-      uiSchema={uiSchema || {}}
-      validator={validator}
-      noHtml5Validate
-      liveValidate={false}
-      showErrorList={false}
-      formData={formData}
-      onChange={e => setFormData(e.formData)}
+    <Box ref={formRef}
+      className="print-container on-print"
+      sx={{
+        position: "static !important",
+        display: "block !important",
+      }}
     >
-      <Button type="submit" variant="contained" color="primary" >Enviar</Button>
-    </TForm >
+      <TForm
+        schema={schema || {}}
+        uiSchema={uiSchema || {}}
+        validator={validator}
+        noHtml5Validate
+        liveValidate={false}
+        showErrorList={false}
+        formData={formData}
+        onChange={e => setFormData(e.formData)}
+      >
+        <Button type="submit" variant="contained" color="primary" className="hide-on-print">Enviar</Button>
+      </TForm >
+    </Box>
   )
 }
 

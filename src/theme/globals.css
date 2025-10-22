@@ -14,53 +14,62 @@ input[data-autocompleted] {
 
 
 
-.trazaDocument img,
-.trazaDiamond img,
-.trazaTerminal img,
-.trazaConector img,
-.trazaLogicGate img,
-.trazaText img,
-.trazaMagneticTape img,
-.trazaStoredData img {
-  width: 30px;
-  height: 30px;
-}
+@media print {
 
-.djs-label {
-  font-family: 'Roboto', sans-serif !important;
-}
+  /* Ocultar encabezados y navegación */
+  header,
+  .MuiAppBar-root,
+  .MuiToolbar-root,
+  nav,
+  .MuiDrawer-root,
+  .MuiDrawer-paper {
+    display: none !important;
+    visibility: hidden !important;
+  }
 
-.djs-outline {
-  stroke: none !important;
-  stroke-width: 0 !important;
-  fill: none;
-}
+  /* Mostrar solo el contenido principal */
+  body>*:not(.print-container) {
+    display: none !important;
+  }
 
-.djs-outline.no-fill {
-  fill: none;
-}
+  /* Ajustes del área imprimible */
+  .print-container {
+    display: block !important;
+    position: static !important;
+    overflow: visible !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 15mm !important;
+    background: white !important;
+  }
 
-.djs-container {
-  background-color: #ffffff;
-  background-image:
-    linear-gradient(0deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
-  background-size: 40px 40px;
-  background-position: 0 0;
+  /* Márgenes y tamaño de página */
+  @page {
+    size: A4;
+    margin: 10mm 12mm 10mm 12mm;
 
-}
+    @top-left {
+      content: none;
+    }
 
-.bjs-powered-by {
-  display: none !important
-}
+    @top-center {
+      content: none;
+    }
 
-.bjs-breadcrumbs {
-  top: 5px !important;
-  left: 34px !important;
-}
+    @top-right {
+      content: none;
+    }
 
-.djs-palette {
-  left: 34px !important;
-  top: 20% !important;
-  width: 100px !important
+    @bottom-left {
+      content: none;
+    }
+
+    @bottom-center {
+      content: counter(page);
+    }
+
+    @bottom-right {
+      content: none;
+    }
+  }
 }
