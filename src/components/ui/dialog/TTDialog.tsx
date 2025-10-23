@@ -37,7 +37,7 @@ const TDialog: FC<Props> = ({ title, open, onClose, children, dialogContentProps
 
   >
     {withCloseButton &&
-      <Box component="span" sx={{ position: "absolute", right: 0, p: 2 }}>
+      <Box component="span" sx={{ position: "sticky", right: 0, p: 2, display: "flex", justifyContent: "flex-end", zIndex: 1 }}>
         <IconButton onClick={onReject}>
           <CloseIcon sx={{ color: theme => theme.palette.tertiary.main }} />
         </IconButton>

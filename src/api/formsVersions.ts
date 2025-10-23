@@ -1,25 +1,24 @@
-import { unWrapWithData } from "./helpers"
+import { unWrap } from "./helpers"
 import { axiosClient } from "./queryClient"
 
 export interface FormVersion {
+  id: string
+  name: string
+  groupID: string
+  version: number,
   data: {
-    id: string
-    name: string
-    groupID: string
-    data: {
-      propertyName: string
-    }
+    propertyName: string
   }
-  isPublished: boolean
   timeCreated: string,
   timeUpdated: string
+
 }
 
 
 
 export const getFormVersion = async (formID: string): Promise<FormVersion[]> => {
   try {
-    return unWrapWithData(axiosClient.get(`/form${formID}/version`))
+    return unWrap(axiosClient.get(`/form/${formID}/version`))
   }
   catch (error) {
     throw error
@@ -29,7 +28,7 @@ export const getFormVersion = async (formID: string): Promise<FormVersion[]> => 
 export type formVersionType = {
   formID: string;
   sourceVersion: number;
-  name: string;
+  name?: string;
 }
 
 export const postFormVersion = async ({
@@ -38,8 +37,8 @@ export const postFormVersion = async ({
   name,
 }: formVersionType): Promise<FormVersion> => {
   try {
-    return await unWrapWithData(
-      axiosClient.post(`/form${formID}/version`, {
+    return await unWrap(
+      axiosClient.post(`/form/${formID}/version`, {
         sourceVersion,
         name,
       })
@@ -56,7 +55,7 @@ export type formVersionNumberType = {
 
 export const getFindVersionNumber = async ({ formID, versionNumber }: formVersionNumberType): Promise<FormVersion> => {
   try {
-    return await unWrapWithData(axiosClient.get(`/form${formID}/version/${versionNumber}`))
+    return await unWrap(axiosClient.get(`/form/${formID}/version/${versionNumber}`))
   }
   catch (error) {
     throw error;
@@ -66,13 +65,13 @@ export const getFindVersionNumber = async ({ formID, versionNumber }: formVersio
 export type putVersionNumberType = {
   formID: string,
   versionNumber: number,
-  name?: FormVersion["data"]["name"]
-  data: FormVersion["data"]["data"]
+  name?: FormVersion["name"]
+  data: FormVersion["data"]
 }
 
 export const putVersionNumber = async ({ formID, versionNumber, name, data }: putVersionNumberType): Promise<FormVersion> => {
   try {
-    return await unWrapWithData(axiosClient.put(`/form/${formID}/version/${versionNumber}`, { name, data }))
+    return await unWrap(axiosClient.put(`/form/${formID}/version/${versionNumber}`, { name, data }))
   }
   catch (error) {
     throw error;
@@ -85,7 +84,7 @@ export type putPublishVersionNumberType = {
 }
 export const putPublishVersionNumber = async ({ formID, versionNumber }: putPublishVersionNumberType): Promise<FormVersion> => {
   try {
-    return await unWrapWithData(axiosClient.get(`/form/${formID}/version/${versionNumber}/publish`))
+    return await unWrap(axiosClient.get(`/form/${formID}/version/${versionNumber}/publish`))
   }
   catch (error) {
     throw error;

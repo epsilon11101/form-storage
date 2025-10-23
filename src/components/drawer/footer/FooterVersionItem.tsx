@@ -1,21 +1,23 @@
 import { TEditingField } from '@/components/ui/editingField/TEditingField';
 import { useEditingField } from '@/components/ui/editingField/useEditingField';
 import { TMenu, TMenuItem } from '@/components/ui/TMenu';
+import useGetFormVersion from '@/stores/useFormVersionsStore';
+
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Box, Menu, Stack, ToggleButton, Typography, type ToggleButtonProps } from "@mui/material";
-import { useEffect, useRef, useState, type Dispatch, type FC, type SetStateAction } from "react";
+import { useEffect, useRef, useState, type FC } from "react";
 
 
-interface Props extends Omit<ToggleButtonProps, "children"> {
+interface Props extends Omit<ToggleButtonProps, "children" | "id"> {
   title: string,
-  currentSelected: string
-  setVersion: Dispatch<SetStateAction<string>>
+  id: number
 }
 
-export const FooterVersionItem: FC<Props> = ({ title, currentSelected, setVersion, value, sx, ...rest }) => {
+export const FooterVersionItem: FC<Props> = ({ title = "Version 1", id, value, sx, ...rest }) => {
 
   const [isVersionSelected, setIsVersionSelected] = useState(false)
+  const { setCurrentVersionID, setCurrentVersionName, currentVersionName } = useGetFormVersion()
 
   const ref = useRef<HTMLButtonElement | null>(null)
 
@@ -27,8 +29,7 @@ export const FooterVersionItem: FC<Props> = ({ title, currentSelected, setVersio
     onKeyEnterHandler: onSaveEditingValue,
   } = useEditingField({
     initialValue: title,
-    onEnter: () => setVersion(editedTextValue),
-
+    onEnter: () => setCurrentVersionName(editedTextValue),
   })
 
   const onEditVersionHandler = () => {
@@ -38,13 +39,15 @@ export const FooterVersionItem: FC<Props> = ({ title, currentSelected, setVersio
   useEffect(() => {
 
     if (ref.current) {
-      if (ref.current.value === currentSelected) {
+      if (ref.current.value === currentVersionName) {
         setIsVersionSelected(true)
+        setCurrentVersionID(id)
+        console.log("CAMBIANDO ID==>", id, title)
         return
       }
       setIsVersionSelected(false)
     }
-  }, [value, currentSelected])
+  }, [value, currentVersionName])
 
 
   return (

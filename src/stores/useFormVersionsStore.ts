@@ -1,31 +1,17 @@
 import { create } from "zustand"
 
 type FormVersionType = {
-  currentVersion: string | null
-  versions: Array<string> | []
-  setCurrentFormVersion: (currentVersion: string | null) => void
-  setVersions: (selectedVersion: number | null, allVersions: Array<string> | null) => void
+  currentVersionName: string | null
+  currentVersionID: number | null
+  setCurrentVersionName: (currentVersionName: string | null) => void
+  setCurrentVersionID: (currentVersionID: number | null) => void
 }
 
-
 const useGetFormVersion = create<FormVersionType>((set) => ({
-  currentVersion: null,
-  versions: [],
-  setCurrentFormVersion: (currentVersion) => set({ currentVersion }),
-  setVersions: (selectedVersion, allVersions) => {
-
-    const safeVersions = allVersions ?? []
-    const currentSelected =
-      selectedVersion && selectedVersion > 0
-        ? safeVersions[selectedVersion - 1]
-        : safeVersions[0] ?? null
-
-    set({
-      currentVersion: currentSelected,
-      versions: safeVersions,
-    })
-  },
+  currentVersionName: "Version 1",
+  currentVersionID: 1,
+  setCurrentVersionName: (currentVersionName) => set({ currentVersionName }),
+  setCurrentVersionID: (currentVersionID) => set({ currentVersionID }),
 }))
-
 
 export default useGetFormVersion

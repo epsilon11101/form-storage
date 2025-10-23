@@ -1,43 +1,71 @@
 import { ToggleButtonGroup } from "@mui/material"
-
-import { useState, type MouseEvent } from "react";
+import { useMemo, useState, type MouseEvent } from "react";
 import { FooterVersionItem } from "./FooterVersionItem";
+
+import useGetIDForm from "@/stores/useFormStore";
+import { useFormVersions } from "@/api/hooks/useFormVersion";
+import { TProgress } from "@/components/ui/TProgress";
+import useGetFormVersion from "@/stores/useFormVersionsStore";
 
 
 export const FooterVersions = () => {
-  const [version, setVersion] = useState("version 1")
+  const { currentVersionName, setCurrentVersionName, currentVersionID } = useGetFormVersion()
+  console.log("CURRENT VERSIONNAME==>", currentVersionName)
+
+  const { formID } = useGetIDForm()
+  const { data, isPending } = useFormVersions(formID || "")
+
+
+  const hasVersions = !!data
+  console.log(currentVersionName, currentVersionID)
+
+
+  const versionElements = useMemo(() => {
+    if (!data || data.length <= 0) return;
+    return data.map(v => {
+      return <FooterVersionItem key={v.id} id={v.version} value={v.name} title={v.name} />
+    })
+  }, [data])
+
+
+
+
 
   const handleChange = (event: MouseEvent<HTMLElement>,
     newVersion: string | null
   ) => {
     if (newVersion !== null) {
-      setVersion(newVersion)
+      setCurrentVersionName(newVersion)
     }
   }
 
 
 
   return (
-    <ToggleButtonGroup
-      color="primary"
-      value={version}
-      exclusive
-      onChange={handleChange}
-      aria-label="control-versions"
-      fullWidth
-      sx={{
-        overflowX: "auto",
-        scrollbarWidth: "none",
-        "&::-webkit-scrollbar": { display: "none" },
-        msOverflowStyle: "none",
-        whiteSpace: "nowrap",
-      }}
+    <TProgress isLoading={isPending}>
+      <ToggleButtonGroup
+        color="primary"
+        value={currentVersionName}
+        exclusive
+        onChange={handleChange}
+        aria-label="control-versions"
+        fullWidth
+        sx={{
+          overflowX: "auto",
+          scrollbarWidth: "none",
+          "&::-webkit-scrollbar": { display: "none" },
+          msOverflowStyle: "none",
+          whiteSpace: "nowrap",
+        }}
 
-    >
-      <FooterVersionItem value="version 1" title="version 1" currentSelected={version} setVersion={setVersion} />
+      >{hasVersions ?
+        versionElements
+        : null
+        }
 
+      </ToggleButtonGroup>
+    </TProgress>
 
-    </ToggleButtonGroup>
 
   )
 }

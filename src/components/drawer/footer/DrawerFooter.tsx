@@ -3,39 +3,86 @@ import { AppBar, IconButton, Toolbar, } from "@mui/material"
 import { FooterVersions } from "./FooterVersions"
 import AddIcon from '@mui/icons-material/Add';
 import { TTooltip } from "@/components/ui/TTooltip";
+import { QueryBoundary } from "@/providers/QueryBoundary";
+import useGetIDForm from "@/stores/useFormStore";
+import { Activity } from "react";
+import { useCreateFormVersion } from "@/api/hooks/useFormVersion";
+import useGetFormVersion from "@/stores/useFormVersionsStore";
+import { parseSchemaString } from "@/utils/utils";
+import useReadDocument from "@/stores/useReadDocument";
+import { TProgress } from "@/components/ui/TProgress";
 
 
 const DrawerFooter = () => {
   const { drawerWidth } = useDrawer()
+  const { formID } = useGetIDForm()
+  const { currentVersionID, setCurrentVersionID, setCurrentVersionName } = useGetFormVersion()
+  const { setFileSchema, setFileUiSchema, setFormData } = useReadDocument()
+
+  const { mutate: createVersion, isPending } = useCreateFormVersion()
+
+  const onCreateVersion = () => {
+    if (!formID || !currentVersionID) return
+    try {
+      createVersion({
+        formID,
+        sourceVersion: currentVersionID,
+      }, {
+        onSuccess: (data) => {
+          const { schema, uiSchema, formData } = parseSchemaString(data.data.propertyName)
+          setCurrentVersionID(data.version)
+          setCurrentVersionName(data.name)
+          setFileSchema(schema ?? {})
+          setFileUiSchema(uiSchema ?? {})
+          setFormData(formData ?? {})
+        }
+      })
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
 
 
   return (
-    <AppBar
+    <Activity mode={formID ? "visible" : "hidden"}>
+      <QueryBoundary>
+        <AppBar
 
-      position="fixed"
-      component="footer"
-      sx={{
-        bgcolor: theme => theme.palette.common.white,
+          position="fixed"
+          component="footer"
+          sx={{
+            bgcolor: theme => theme.palette.common.white,
 
-        top: "auto",
-        bottom: 0,
-        width: `calc(100% - ${drawerWidth}px)`,
-        transition: (theme) =>
-          theme.transitions.create(["width"], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-          }),
-      }}
-    >
-      <Toolbar sx={{ gap: 2 }}>
-        <TTooltip title="Nueva versión">
-          <IconButton sx={{ p: 0 }}><AddIcon /></IconButton>
-        </TTooltip>
+            top: "auto",
+            bottom: 0,
+            width: `calc(100% - ${drawerWidth}px)`,
+            transition: (theme) =>
+              theme.transitions.create(["width"], {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
+              }),
+          }}
+        >
+          <Toolbar sx={{ gap: 2 }}>
+            <TTooltip title="Nueva versión">
+              <IconButton sx={{ p: 0 }} onClick={onCreateVersion}><AddIcon /></IconButton>
+            </TTooltip>
 
-        <FooterVersions />
-      </Toolbar>
+            <TProgress isLoading={isPending}>
 
-    </AppBar >
+              <FooterVersions />
+            </TProgress>
+          </Toolbar>
+
+        </AppBar >
+      </QueryBoundary>
+
+    </Activity>
+
+
   )
 }
 

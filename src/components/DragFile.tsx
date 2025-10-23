@@ -26,7 +26,7 @@ interface Props extends Omit<DropzoneProps, 'onDrop' | 'maxSize'> {
 const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandler, ...rest }) => {
 
   const { formParentID, setFormID, setFormParentName } = useGetIDForm()
-  const { setCurrentFormVersion } = useGetFormVersion()
+  const { setCurrentVersionID, setCurrentVersionName } = useGetFormVersion()
   const { setFileSchema, setFileUiSchema, setFormData } = useReadDocument()
   const { mutate: uploadFileMutation } = useCreateForm()
   const [isPending, startTransition] = useTransition()
@@ -65,9 +65,13 @@ const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandl
             },
             {
               onSuccess: ({ id, groupName, currentVersion }) => {
+                console.log("CURRENT VERSION====>", currentVersion)
                 setFormID(id)
                 setFormParentName(groupName || "error obteniendo nombre")
-                setCurrentFormVersion(String(currentVersion))
+                //NOTE: aqui se resetea para cuando se agrega un nuevo archivo
+                setCurrentVersionID(currentVersion)
+                setCurrentVersionName("Version 1")
+
               }
             }
           )
@@ -94,8 +98,6 @@ const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandl
     const hasInvalidType = fileRejections.some(
       (fileRejection) => fileRejection.errors[0].code === 'file-invalid-type'
     )
-
-    console.log(hasInvalidType);
 
   }
 

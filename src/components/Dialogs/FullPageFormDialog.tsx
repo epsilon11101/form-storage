@@ -14,7 +14,7 @@ const FullPageFormDialog: FC<Props> = ({ title, open, onClose, }) => {
       title={title}
       fullScreen
       dialogContentProps={{ sx: { width: "100%", height: "100%" } }}
-
+      withCloseButton
     >
       <Stack direction="column" justifyContent="center" alignItems="center" gap={2} pt={1} flex={1}>
         <FormSection />

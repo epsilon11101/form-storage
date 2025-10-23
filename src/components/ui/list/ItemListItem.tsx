@@ -48,7 +48,6 @@ export const ItemListItem: FC<ItemLisItemProps> = ({ icon, id, name, selected, p
 
 
   const onClickHandler = async () => {
-    console.log("ON CLICK")
     setFormParentName(parent.name)
     setFormParentID(parent.id)
     setFormID(id)
@@ -94,7 +93,6 @@ export const ItemListItem: FC<ItemLisItemProps> = ({ icon, id, name, selected, p
     if (!data) return
     const updateContent = () => {
       const content = data.data.propertyName
-      console.log(content)
       const { schema, uiSchema, formData } = parseSchemaString(content)
       setFileSchema(schema ?? {})
       setFileUiSchema(uiSchema ?? {})

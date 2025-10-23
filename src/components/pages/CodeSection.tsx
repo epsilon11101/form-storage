@@ -61,7 +61,7 @@ const CodeSection: FC<Props> = ({ code, formType }) => {
       "formData": useReadDocument.getState().formData
     }
     const stringifyData = stringifyCode(mergedData)
-    console.log(currentVersion)
+
     updateVersion({
       formID: formID || "error",
       versionNumber: Number(currentVersion),
