@@ -10,13 +10,15 @@ import { TTooltip } from "@/components/ui/TTooltip";
 import noData from "@/assets/noData.svg";
 import { TProgress } from "@/components/ui/TProgress";
 import { stringifyCode } from "@/utils/utils";
-
 const MainPage = () => {
+
   const [openFormDialog, setOpenFormDialog] = useState(false);
   const { schema, uiSchema, formData, isLoading } = useReadDocument();
 
   const onCloseDialogHandler = () => setOpenFormDialog(false);
   const onOpenDialogHandler = () => setOpenFormDialog(true);
+
+
 
   return (
     <>

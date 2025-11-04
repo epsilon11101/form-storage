@@ -5,12 +5,13 @@ import AddIcon from '@mui/icons-material/Add';
 import { TTooltip } from "@/components/ui/TTooltip";
 import { QueryBoundary } from "@/providers/QueryBoundary";
 import useGetIDForm from "@/stores/useFormStore";
-import { Activity } from "react";
+import { Activity, startTransition } from "react";
 import { useCreateFormVersion } from "@/api/hooks/useFormVersion";
 import useGetFormVersion from "@/stores/useFormVersionsStore";
 import { parseSchemaString } from "@/utils/utils";
 import useReadDocument from "@/stores/useReadDocument";
 import { TProgress } from "@/components/ui/TProgress";
+
 
 
 const DrawerFooter = () => {
@@ -29,12 +30,18 @@ const DrawerFooter = () => {
         sourceVersion: currentVersionID,
       }, {
         onSuccess: (data) => {
-          const { schema, uiSchema, formData } = parseSchemaString(data.data.propertyName)
-          setCurrentVersionID(data.version)
-          setCurrentVersionName(data.name)
-          setFileSchema(schema ?? {})
-          setFileUiSchema(uiSchema ?? {})
-          setFormData(formData ?? {})
+
+          startTransition(() => {
+            const { schema, uiSchema, formData } = parseSchemaString(data.data.propertyName)
+
+            setCurrentVersionID(data.version)
+            setCurrentVersionName(data.name)
+            setFileSchema(schema ?? {})
+            setFileUiSchema(uiSchema ?? {})
+            setFormData(formData ?? {})
+
+          })
+
         }
       })
 
@@ -48,6 +55,7 @@ const DrawerFooter = () => {
 
   return (
     <Activity mode={formID ? "visible" : "hidden"}>
+
       <QueryBoundary>
         <AppBar
 
@@ -72,7 +80,6 @@ const DrawerFooter = () => {
             </TTooltip>
 
             <TProgress isLoading={isPending}>
-
               <FooterVersions />
             </TProgress>
           </Toolbar>

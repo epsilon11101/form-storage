@@ -15,6 +15,7 @@ import useGetIDForm from "@/stores/useFormStore"
 import { TProgress } from "../TProgress"
 import useGetFormVersion from "@/stores/useFormVersionsStore"
 
+
 type parentProps = {
   id: string,
   name: string
@@ -42,12 +43,13 @@ export const ItemListItem: FC<ItemLisItemProps> = ({ icon, id, name, selected, p
   const { setFileSchema, setFileUiSchema, setFormData, setIsLoading } = useReadDocument()
   const { mutate: onDelete, isPending, isSuccess, isError } = useDeleteForm()
   const { setFormParentName, setFormParentID, formParentID, setFormID } = useGetIDForm()
-  const { setCurrentFormVersion } = useGetFormVersion()
+  const { setCurrentVersionID, setCurrentVersionName } = useGetFormVersion()
   const deleteStatus = (isSuccess || isPending) && !isError
   const queryClient = useQueryClient()
 
-
   const onClickHandler = async () => {
+
+
     setFormParentName(parent.name)
     setFormParentID(parent.id)
     setFormID(id)
@@ -58,7 +60,8 @@ export const ItemListItem: FC<ItemLisItemProps> = ({ icon, id, name, selected, p
       console.log("refetching error", error, JSON.stringify(data))
       return
     }
-    setCurrentFormVersion(String(data?.currentVersion))
+    setCurrentVersionID(Number(data?.currentVersion))
+    setCurrentVersionName(data?.currentName || "error")
   }
 
   function onUpdateHandler() {
@@ -80,6 +83,7 @@ export const ItemListItem: FC<ItemLisItemProps> = ({ icon, id, name, selected, p
         setFileSchema(null)
         setFileUiSchema(null)
         setFormData({})
+        setFormID(null)
       }
     })
   }
@@ -97,6 +101,8 @@ export const ItemListItem: FC<ItemLisItemProps> = ({ icon, id, name, selected, p
       setFileSchema(schema ?? {})
       setFileUiSchema(uiSchema ?? {})
       setFormData(formData ?? {})
+      setCurrentVersionID(data?.currentVersion)
+      setCurrentVersionName(data?.currentName)
 
     }
 

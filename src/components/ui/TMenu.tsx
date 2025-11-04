@@ -32,7 +32,7 @@ export const TMenu: FC<TMenuProps> = ({ onTriggerClick, slotProps, children }) =
   return <PopupState variant="popover" popupId="version-submenu">
     {(popupState) => (
       <Box component="div" onClick={onClick}>
-        <IconButton color="primary" {...slotProps?.iconButtonProps}  {...bindTrigger(popupState)} disableRipple >
+        <IconButton component="span" color="primary" {...slotProps?.iconButtonProps}  {...bindTrigger(popupState)} disableRipple >
           <MoreVertIcon fontSize="medium" color="primary" {...slotProps?.iconProps} />
         </IconButton>
         {children({ popupStateHandler: popupState, bindMenuProps: bindMenu(popupState) })}

@@ -10,6 +10,7 @@ export interface Form {
     propertyName: string
   }
   currentVersion: number,
+  currentName: string,
   timeCreated: string,
   timeUpdated: string
 }
@@ -17,7 +18,7 @@ export interface Form {
 type putFormBodyType = {
   formID: string
 } & Pick<Form, 'groupID' | 'name'> &
-  Partial<Pick<Form, 'data'>>
+  Partial<Pick<Form, 'data' | 'currentVersion' | 'currentName'>>
 
 type postFormBodyType = Omit<putFormBodyType, 'formID'>
 
@@ -33,9 +34,9 @@ export const getForm = async (formID: string): Promise<Form> => {
 }
 
 
-export const putForm = async ({ formID, groupID, name, data }: putFormBodyType): Promise<Form> => {
+export const putForm = async ({ formID, groupID, name, data, currentVersion, currentName }: putFormBodyType): Promise<Form> => {
   try {
-    return await unWrap(axiosClient.put(`/form/${formID}`, { groupID, name, data }))
+    return await unWrap(axiosClient.put(`/form/${formID}`, { groupID, name, data, currentVersion, currentName }))
   }
   catch (error) {
     throw error

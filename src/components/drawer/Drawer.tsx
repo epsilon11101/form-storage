@@ -16,7 +16,7 @@ import { Button, Stack } from '@mui/material';
 import Logo from '../ui/logo/Logo';
 import useDrawer from '@/stores/useDrawer';
 import DrawerFooter from './footer/DrawerFooter';
-import { type ReactNode, type RefObject } from "react"
+import { type ReactNode, type RefObject, useEffect } from "react"
 import { QueryBoundary } from '@/providers/QueryBoundary';
 import { DrawerContent } from './DrawerContent';
 import DrawerContentFooter from './DrawerContentFooter';
@@ -44,7 +44,7 @@ export default function TDrawer({ children }: TDrawerProps) {
   const { drawerWidth, isDrawerOpen, setDrawerOpen } = useDrawer()
   const { formData, uiSchema, schema, isSaving, printRef } = useReadDocument()
   const { isPending, mutate: updateVersion } = useUpdateFormVersion()
-  const { currentVersion } = useGetFormVersion()
+  const { currentVersionID } = useGetFormVersion()
   const { formID } = useGetIDForm()
 
   const onPrint = useReactToPrint({
@@ -56,8 +56,6 @@ export default function TDrawer({ children }: TDrawerProps) {
     .MuiDrawer-root, .MuiDrawer-paper { display: none !important; }
   }
 `,
-
-
   })
 
 
@@ -71,6 +69,8 @@ export default function TDrawer({ children }: TDrawerProps) {
   const handleDrawerClose = () => {
     setDrawerOpen(false);
   };
+
+
 
 
   const isSavingIcon = isSaving || isPending ? <TProgress isLoading={isSaving}
@@ -90,6 +90,7 @@ export default function TDrawer({ children }: TDrawerProps) {
 
 
 
+
   const onSaveHandler = () => {
     const mergedData = {
       "schema": schema,
@@ -100,13 +101,25 @@ export default function TDrawer({ children }: TDrawerProps) {
 
     updateVersion({
       formID: formID || "error",
-      versionNumber: Number(currentVersion),
+      versionNumber: Number(currentVersionID),
       data: {
         propertyName: stringifyData || ""
       }
     })
   }
 
+
+  useEffect(() => {
+    const handleSaveShortcut = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key.toLowerCase() === "s") {
+        e.preventDefault()
+        onSaveHandler()
+      }
+    }
+
+    window.addEventListener("keydown", handleSaveShortcut)
+    return () => window.removeEventListener("keydown", handleSaveShortcut)
+  }, [schema, uiSchema, formData])
 
 
 

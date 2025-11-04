@@ -5,8 +5,10 @@ import {
   putVersionNumber,
   postFormVersion,
   type FormVersion,
+  deleteVersion,
 } from "../formsVersions.ts"
-import type { formVersionType, putVersionNumberType } from "../formsVersions"
+import type { deleteVersionType, formVersionType, putVersionNumberType, Version } from "../formsVersions"
+import { formQueryKeys } from "./useForms.ts"
 
 
 
@@ -20,7 +22,7 @@ export const formVersionKeys = {
 }
 
 export const useFormVersions = (formID: string) => {
-  return useQuery<FormVersion[], Error>({
+  return useQuery<FormVersion, Error>({
     queryKey: formVersionKeys.list(formID),
     queryFn: () => getFormVersion(formID),
     enabled: !!formID,
@@ -34,30 +36,40 @@ export const useFormVersionDetail = (formID: string, versionNumber: string) => {
   })
 }
 
-
 export const useCreateFormVersion = () => {
   const queryClient = useQueryClient()
-  return useMutation<FormVersion, Error, formVersionType>({
+
+  return useMutation<Version, Error, formVersionType>({
     mutationFn: postFormVersion,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: formVersionKeys.list(variables.formID),
-      })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: formVersionKeys.all })
     },
   })
 }
-
-
 export const useUpdateFormVersion = () => {
   const queryClient = useQueryClient()
-  return useMutation<FormVersion, Error, putVersionNumberType>({
+  return useMutation<Version, Error, putVersionNumberType>({
     mutationFn: putVersionNumber,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: formVersionKeys.all })
+    ,
+  })
+}
+
+export const useDeleteFormVersion = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation<void, Error, deleteVersionType>({
+    mutationFn: deleteVersion,
     onSuccess: (_, variables) => {
+
       queryClient.invalidateQueries({
-        queryKey: formVersionKeys.detail(
-          variables.formID,
-          variables.versionNumber
-        ),
+        queryKey: formVersionKeys.all,
+      })
+      queryClient.invalidateQueries({
+        queryKey: formQueryKeys.all,
+      })
+      queryClient.invalidateQueries({
+        queryKey: formQueryKeys.detail(variables.formID),
       })
     },
   })

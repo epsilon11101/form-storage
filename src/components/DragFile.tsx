@@ -65,7 +65,6 @@ const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandl
             },
             {
               onSuccess: ({ id, groupName, currentVersion }) => {
-                console.log("CURRENT VERSION====>", currentVersion)
                 setFormID(id)
                 setFormParentName(groupName || "error obteniendo nombre")
                 //NOTE: aqui se resetea para cuando se agrega un nuevo archivo

@@ -16,42 +16,49 @@ import useGetFormVersion from "@/stores/useFormVersionsStore";
 interface Props {
   code: string | undefined;
   formType: "schema" | "uiSchema" | "formData"
+
 }
 
 const CodeSection: FC<Props> = ({ code, formType }) => {
   const [errors, setErrors] = useState<null | string[]>(null);
   const { setFileSchema, setFormData, setFileUiSchema, setAutoSaveLoading } = useReadDocument()
   const { formID } = useGetIDForm()
-  const { currentVersion } = useGetFormVersion()
+  const { currentVersionID } = useGetFormVersion()
   const { isPending, mutate: updateVersion } = useUpdateFormVersion()
+
+
+  const wichSchema = (value: string) => {
+    const data = JSON.parse(value)
+
+
+    switch (formType) {
+      case "schema":
+        setFileSchema(data)
+        break;
+      case "uiSchema":
+        setFileUiSchema(data)
+        break;
+      case "formData":
+        setFormData(data)
+        break;
+    }
+    onSaveData()
+  }
 
 
 
   const handleCodeChange = (value: string, viewUpdate: ViewUpdate) => {
-
     const diagnostics = jsonParseLinter()(viewUpdate.view);
 
     if (diagnostics.length > 0) {
       setErrors(diagnostics.map(d => d.message))
     } else {
       setErrors(null)
-      const data = JSON.parse(value)
-
-      switch (formType) {
-        case "schema":
-          setFileSchema(data)
-          break;
-        case "uiSchema":
-          setFileUiSchema(data)
-          break;
-        case "formData":
-          setFormData(data)
-          break;
-      }
-
-      onSaveData()
+      wichSchema(value)
     }
   };
+
+
 
   const onSaveData = () => {
 
@@ -62,9 +69,10 @@ const CodeSection: FC<Props> = ({ code, formType }) => {
     }
     const stringifyData = stringifyCode(mergedData)
 
+
     updateVersion({
       formID: formID || "error",
-      versionNumber: Number(currentVersion),
+      versionNumber: Number(currentVersionID),
       data: {
         propertyName: stringifyData || ""
       }
@@ -73,13 +81,21 @@ const CodeSection: FC<Props> = ({ code, formType }) => {
   }
 
 
+
+
   useEffect(() => {
     setAutoSaveLoading(isPending)
   }, [isPending])
 
+
+
+
+
+
   return (
     <>
       <CodeMirror
+
         value={code}
         height="100%"
         extensions={[
@@ -89,7 +105,9 @@ const CodeSection: FC<Props> = ({ code, formType }) => {
           EditorView.lineWrapping,
         ]}
         theme={githubLight}
-        onChange={debounce(handleCodeChange, 1000)} />
+        onChange={debounce(handleCodeChange, 300)}
+
+      />
 
       {errors && <Alert severity="error" sx={{ mt: 2 }}>
         <Typography variant="caption">{errors.map(e => e)}</Typography>

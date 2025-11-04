@@ -1,33 +1,33 @@
 import { ToggleButtonGroup } from "@mui/material"
-import { useMemo, useState, type MouseEvent } from "react";
+
+import { useMemo, type MouseEvent } from "react";
 import { FooterVersionItem } from "./FooterVersionItem";
 
-import useGetIDForm from "@/stores/useFormStore";
-import { useFormVersions } from "@/api/hooks/useFormVersion";
-import { TProgress } from "@/components/ui/TProgress";
 import useGetFormVersion from "@/stores/useFormVersionsStore";
+import { useFormVersions } from "@/api/hooks/useFormVersion";
+import useGetIDForm from "@/stores/useFormStore";
+import { TProgress } from "@/components/ui/TProgress";
 
 
 export const FooterVersions = () => {
-  const { currentVersionName, setCurrentVersionName, currentVersionID } = useGetFormVersion()
-  console.log("CURRENT VERSIONNAME==>", currentVersionName)
 
   const { formID } = useGetIDForm()
+  const { setCurrentVersionName, currentVersionName } = useGetFormVersion()
+
   const { data, isPending } = useFormVersions(formID || "")
 
-
-  const hasVersions = !!data
-  console.log(currentVersionName, currentVersionID)
-
-
-  const versionElements = useMemo(() => {
-    if (!data || data.length <= 0) return;
-    return data.map(v => {
-      return <FooterVersionItem key={v.id} id={v.version} value={v.name} title={v.name} />
-    })
-  }, [data])
-
-
+  const footerVersions = useMemo(() => {
+    if (!data?.versions.length) return null;
+    return data.versions.map((vitem) => (
+      <FooterVersionItem
+        key={vitem.id || vitem.version} // importante para evitar warning
+        title={vitem.name}
+        id={vitem.version}
+        value={vitem.name}
+        totalItems={data.versions.length}
+      />
+    ));
+  }, [data]);
 
 
 
@@ -58,11 +58,8 @@ export const FooterVersions = () => {
           whiteSpace: "nowrap",
         }}
 
-      >{hasVersions ?
-        versionElements
-        : null
-        }
-
+      >
+        {footerVersions}
       </ToggleButtonGroup>
     </TProgress>
 
