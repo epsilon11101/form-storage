@@ -11,10 +11,15 @@ import useGetFormVersion from "@/stores/useFormVersionsStore";
 import { parseSchemaString } from "@/utils/utils";
 import useReadDocument from "@/stores/useReadDocument";
 import { TProgress } from "@/components/ui/TProgress";
+import { STRINGS } from "@/constants/strings";
+import { usePathName } from "@/hooks/usePathName";
 
 
 
 const DrawerFooter = () => {
+  const { hidden } = usePathName()
+  if (!hidden) return null
+
   const { drawerWidth } = useDrawer()
   const { formID } = useGetIDForm()
   const { currentVersionID, setCurrentVersionID, setCurrentVersionName } = useGetFormVersion()
@@ -50,9 +55,6 @@ const DrawerFooter = () => {
     }
   }
 
-
-
-
   return (
     <Activity mode={formID ? "visible" : "hidden"}>
 
@@ -75,7 +77,7 @@ const DrawerFooter = () => {
           }}
         >
           <Toolbar sx={{ gap: 2 }}>
-            <TTooltip title="Nueva versión">
+            <TTooltip title={STRINGS.NEW_VERSION}>
               <IconButton sx={{ p: 0 }} onClick={onCreateVersion}><AddIcon /></IconButton>
             </TTooltip>
 

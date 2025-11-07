@@ -23,7 +23,6 @@ const TList: FC<Props> = ({ id,
 
     return jsonFolders.map((parent) => (
       <ItemList key={parent.parent_name} jsonItem={parent} parentIcon={parentIcon} childrenIcon={childrenIcon}
-
       />
     ));
   }, [jsonFolders]);

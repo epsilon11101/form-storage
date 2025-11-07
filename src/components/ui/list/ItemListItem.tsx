@@ -14,6 +14,7 @@ import { TEditingField } from "../editingField/TEditingField"
 import useGetIDForm from "@/stores/useFormStore"
 import { TProgress } from "../TProgress"
 import useGetFormVersion from "@/stores/useFormVersionsStore"
+import { STRINGS } from "@/constants/strings";
 
 
 type parentProps = {
@@ -61,7 +62,7 @@ export const ItemListItem: FC<ItemLisItemProps> = ({ icon, id, name, selected, p
       return
     }
     setCurrentVersionID(Number(data?.currentVersion))
-    setCurrentVersionName(data?.currentName || "error")
+    setCurrentVersionName(data?.currentName || STRINGS.ERROR_GENERIC)
   }
 
   function onUpdateHandler() {
@@ -147,7 +148,7 @@ export const ItemListItem: FC<ItemLisItemProps> = ({ icon, id, name, selected, p
             :
             <TProgress isLoading={isUpdatePending}>
               <ListItemIcon sx={{ minWidth: 24 }}>{icon}</ListItemIcon>
-              <ListItemText primary={deleteStatus ? "Eliminando" : name} primaryTypographyProps={{
+              <ListItemText primary={deleteStatus ? STRINGS.DELETING : name} primaryTypographyProps={{
                 noWrap: true,
                 variant: "caption",
                 sx: {
@@ -174,13 +175,13 @@ export const ItemListItem: FC<ItemLisItemProps> = ({ icon, id, name, selected, p
                       onClick={onEditHandler}
 
                       icon={<EditIcon color="primary" fontSize="small" />}
-                      title="Editar"
+                      title={STRINGS.EDIT}
                       sx={{ "&:hover": { bgcolor: "#eaf6fb" } }} />
                     <TMenuItem
                       popupState={popupStateHandler}
                       onClick={onDeleteHandler}
                       icon={<ClearIcon color="error" fontSize="small" />}
-                      title="Eliminar"
+                      title={STRINGS.DELETE}
                       sx={{ "&:hover": { bgcolor: " #fbeaea" } }} />
                   </Menu>
                 }

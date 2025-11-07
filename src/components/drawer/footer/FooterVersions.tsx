@@ -7,6 +7,7 @@ import useGetFormVersion from "@/stores/useFormVersionsStore";
 import { useFormVersions } from "@/api/hooks/useFormVersion";
 import useGetIDForm from "@/stores/useFormStore";
 import { TProgress } from "@/components/ui/TProgress";
+import { STRINGS } from "@/constants/strings";
 
 
 export const FooterVersions = () => {
@@ -48,7 +49,7 @@ export const FooterVersions = () => {
         value={currentVersionName}
         exclusive
         onChange={handleChange}
-        aria-label="control-versions"
+        aria-label={STRINGS.CONTROL_VERSIONS_ARIA}
         fullWidth
         sx={{
           overflowX: "auto",
@@ -66,4 +67,3 @@ export const FooterVersions = () => {
 
   )
 }
-

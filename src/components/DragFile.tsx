@@ -14,6 +14,7 @@ import useGetIDForm from '@/stores/useFormStore'
 import ErrorIcon from '@mui/icons-material/Error';
 import { TProgress } from './ui/TProgress'
 import useGetFormVersion from '@/stores/useFormVersionsStore'
+import { STRINGS } from "@/constants/strings";
 
 
 interface Props extends Omit<DropzoneProps, 'onDrop' | 'maxSize'> {
@@ -66,10 +67,10 @@ const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandl
             {
               onSuccess: ({ id, groupName, currentVersion }) => {
                 setFormID(id)
-                setFormParentName(groupName || "error obteniendo nombre")
+                setFormParentName(groupName || STRINGS.ERROR_FETCHING_NAME)
                 //NOTE: aqui se resetea para cuando se agrega un nuevo archivo
                 setCurrentVersionID(currentVersion)
-                setCurrentVersionName("Version 1")
+                setCurrentVersionName(STRINGS.DEFAULT_VERSION_NAME)
 
               }
             }
@@ -150,10 +151,10 @@ const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandl
                     />
                     <Stack direction="column" rowGap={2} alignItems="center">
                       <Typography variant="h5" sx={{ textTransform: 'none !important' }} color="error">
-                        Error al leer el archivo
+                        {STRINGS.FILE_READ_ERROR}
                       </Typography>
                       <Typography variant="textTitles" color="error">
-                        No tiene el formato correcto{' '}
+                        {STRINGS.FILE_INVALID_FORMAT}{' '}
                         <code>
                           {'{'}
                           "schema": "...",
@@ -161,7 +162,7 @@ const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandl
                           {'}'}
                         </code>
                       </Typography>
-                      <Button variant="contained" color="error" onClick={onResetHandler}>Reintentar</Button>
+                      <Button variant="contained" color="error" onClick={onResetHandler}>{STRINGS.RETRY}</Button>
                     </Stack>
                   </>
                 ) : (
@@ -173,10 +174,10 @@ const DragFile: FC<Props> = ({ maxSize = 10, hasError, setHasError, onCloseHandl
                     />
                     <Stack direction="column" rowGap={2} alignItems="center">
                       <Typography variant="h5" sx={{ textTransform: 'none !important' }}>
-                        {isDragActive ? 'Soltar proyecto' : 'Arrastrar proyecto'}
+                        {isDragActive ? STRINGS.DROP_PROJECT : STRINGS.DRAG_PROJECT}
                       </Typography>
                       <Typography variant="textTitles">
-                        Solo se admiten archivos txt
+                        {STRINGS.TXT_FILES_ONLY}
                       </Typography>
                     </Stack>
                   </>

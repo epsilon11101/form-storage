@@ -1,5 +1,6 @@
 import { type DialogActionsProps, DialogActions, Button, type ButtonProps } from "@mui/material";
 import type { FC } from "react";
+import { STRINGS } from "@/constants/strings";
 
 interface TDialogActionsProps extends DialogActionsProps {
   onAccept: () => void,
@@ -13,7 +14,7 @@ interface TDialogActionsProps extends DialogActionsProps {
 }
 
 
-export const TDialogActions: FC<TDialogActionsProps> = ({ onAccept, onReject, acceptTitle = "Crear", rejectTitle = "Cancelar", slots, ...rest }) => {
+export const TDialogActions: FC<TDialogActionsProps> = ({ onAccept, onReject, acceptTitle = STRINGS.CREATE, rejectTitle = STRINGS.CANCEL, slots, ...rest }) => {
 
   return (
     <DialogActions {...rest}>

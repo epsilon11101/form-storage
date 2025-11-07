@@ -10,6 +10,7 @@ import { TTooltip } from "@/components/ui/TTooltip";
 import noData from "@/assets/noData.svg";
 import { TProgress } from "@/components/ui/TProgress";
 import { stringifyCode } from "@/utils/utils";
+import { STRINGS } from "@/constants/strings";
 const MainPage = () => {
 
   const [openFormDialog, setOpenFormDialog] = useState(false);
@@ -47,7 +48,7 @@ const MainPage = () => {
 
                     {/* RIGHT: FORM RENDERIZADO (ICONO DE PANTALLA COMPLETA) */}
                     <ResizablePanel defaultSize={50} className="p-2" style={{ position: "static" }}>
-                      <TTooltip title="Pantalla Completa" placement="left" slotProps={{
+                      <TTooltip title={STRINGS.FULL_SCREEN} placement="left" slotProps={{
                         popper: {
                           disablePortal: false,
                           modifiers: [
@@ -102,9 +103,9 @@ const MainPage = () => {
         ) : (
           <Stack height="100%" justifyContent="center" alignItems="center" flex="1">
             <Box>
-              <img src={noData} alt="no-data-img" />
+              <img src={noData} alt={STRINGS.NO_DATA_ALT} />
             </Box>
-            <Typography variant="h3">No hay nada que mostrar</Typography>
+            <Typography variant="h3">{STRINGS.NO_DATA_MESSAGE}</Typography>
           </Stack>
         )}
       </TProgress>

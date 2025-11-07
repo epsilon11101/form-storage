@@ -4,6 +4,7 @@ import validator from '@rjsf/validator-ajv8';
 import useReadDocument from "@/stores/useReadDocument";
 import { useEffect, useRef } from "react";
 import { Box } from "@mui/material";
+import { STRINGS } from "@/constants/strings";
 
 const FormSection = () => {
   const formRef = useRef<HTMLDivElement | null>(null)
@@ -33,7 +34,7 @@ const FormSection = () => {
         formData={formData}
         onChange={e => setFormData(e.formData)}
       >
-        <Button type="submit" variant="contained" color="primary" className="hide-on-print">Enviar</Button>
+        <Button type="submit" variant="contained" color="primary" className="hide-on-print">{STRINGS.SUBMIT}</Button>
       </TForm >
     </Box>
   )

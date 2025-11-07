@@ -11,7 +11,7 @@ type FormVersionType = {
 }
 
 const useGetFormVersion = create<FormVersionType>((set) => ({
-  currentVersionName: "Version 1",
+  currentVersionName: "Versión 1",
   currentVersionID: 1,
   getVersions: null,
   setCurrentVersionName: (currentVersionName) => set({ currentVersionName }),

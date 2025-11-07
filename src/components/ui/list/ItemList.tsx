@@ -20,6 +20,7 @@ import useReadDocument from "@/stores/useReadDocument";
 import ArticleIcon from '@mui/icons-material/Article';
 import { useCreateForm } from "@/api/hooks/useForms";
 import useGetFormVersion from "@/stores/useFormVersionsStore";
+import { STRINGS } from "@/constants/strings";
 
 interface Props {
   jsonItem: FolderStructureType[number]
@@ -101,7 +102,7 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
     uploadFileMutation(
       {
         groupID: jsonItem.id,
-        name: "Forma precodificada",
+        name: STRINGS.PRECODED_FORM_NAME,
         data: {
           propertyName: `{
                          "schema": {
@@ -116,10 +117,10 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
       {
         onSuccess: ({ id, groupName, currentVersion }) => {
           setFormID(id)
-          setFormParentName(groupName || "error obteniendo nombre")
+          setFormParentName(groupName || STRINGS.ERROR_FETCHING_NAME)
           //NOTE: aqui se resetea para cuando se agrega un nuevo archivo
           setCurrentVersionID(currentVersion)
-          setCurrentVersionName("Version 1")
+          setCurrentVersionName(STRINGS.DEFAULT_VERSION_NAME)
           setFileSchema({})
           setFileUiSchema({})
           setFormData({})
@@ -159,26 +160,26 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
                           popupState={popupStateHandler}
                           onClick={onOpenDialogHandler}
                           icon={<AddIcon color="primary" />}
-                          title="Agregar"
+                          title={STRINGS.ADD}
                           sx={{ "&:hover": { bgcolor: "#eaf6fb" } }}
                         />
                         <TMenuItem
                           popupState={popupStateHandler}
                           onClick={onNewBlankDocument}
                           icon={<ArticleIcon color="primary" fontSize="small" />}
-                          title="Nuevo"
+                          title={STRINGS.NEW}
                           sx={{ "&:hover": { bgcolor: "#eaf6fb" } }} />
                         <TMenuItem
                           popupState={popupStateHandler}
                           onClick={onEditingHandler}
                           icon={<EditIcon color="primary" fontSize="small" />}
-                          title="Editar"
+                          title={STRINGS.EDIT}
                           sx={{ "&:hover": { bgcolor: "#eaf6fb" } }} />
                         <TMenuItem
                           popupState={popupStateHandler}
                           onClick={onDeleteHandler}
                           icon={<DeleteIcon color="error" fontSize="small" />}
-                          title="Eliminar"
+                          title={STRINGS.DELETE}
                           sx={{ "&:hover": { bgcolor: " #fbeaea" } }} />
 
 
@@ -205,7 +206,7 @@ const ItemList: FC<Props> = ({ jsonItem, parentIcon, childrenIcon }) => {
                 ) : (
                   <>
                     <ListItemText
-                      primary={deleteStatus ? "ELIMINANDO" : value}
+                      primary={deleteStatus ? STRINGS.DELETING_UPPER : value}
                       primaryTypographyProps={{
                         noWrap: true,
                         variant: "caption",

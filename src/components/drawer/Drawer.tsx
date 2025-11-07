@@ -9,7 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
-import { DrawerHeader } from './DrawerHeader';
+import { DrawerHeader } from './header/DrawerHeader';
 import { AppBar } from './AppBar';
 import { Main } from './Main';
 import { Button, Stack } from '@mui/material';
@@ -30,6 +30,10 @@ import { stringifyCode } from '@/utils/utils';
 
 import PrintIcon from '@mui/icons-material/Print';
 import { useReactToPrint } from 'react-to-print';
+import { STRINGS } from "@/constants/strings";
+import { usePathName } from '@/hooks/usePathName';
+import GitlabHeader from './header/GitlabHeader';
+
 
 interface TDrawerProps {
   children: ReactNode
@@ -39,6 +43,7 @@ interface TDrawerProps {
 
 export default function TDrawer({ children }: TDrawerProps) {
 
+  const { hidden } = usePathName()
   const { formParentName } = useGetIDForm()
   const theme = useTheme();
   const { drawerWidth, isDrawerOpen, setDrawerOpen } = useDrawer()
@@ -46,6 +51,8 @@ export default function TDrawer({ children }: TDrawerProps) {
   const { isPending, mutate: updateVersion } = useUpdateFormVersion()
   const { currentVersionID } = useGetFormVersion()
   const { formID } = useGetIDForm()
+
+
 
   const onPrint = useReactToPrint({
     contentRef: printRef as unknown as RefObject<HTMLElement>,
@@ -82,7 +89,7 @@ export default function TDrawer({ children }: TDrawerProps) {
     }
   /> : <SaveIcon />
 
-  const isSavingText = isSaving || isPending ? "guardando" : "guardar"
+  const isSavingText = isSaving || isPending ? STRINGS.SAVING_LOWER : STRINGS.SAVE_LOWER
 
   const onPrintHandler = () => {
     onPrint()
@@ -132,7 +139,7 @@ export default function TDrawer({ children }: TDrawerProps) {
         <AppBar position="fixed" open={isDrawerOpen}>
           <Toolbar sx={{ bgcolor: "white" }}>
             <IconButton
-              aria-label="open drawer"
+              aria-label={STRINGS.OPEN_DRAWER_ARIA}
               onClick={handleDrawerOpen}
               edge="start"
               sx={[
@@ -153,13 +160,19 @@ export default function TDrawer({ children }: TDrawerProps) {
                     {formParentName}
                   </Typography>
                   <Button variant="contained" size="small" color="primary" startIcon={isSavingIcon} onClick={onSaveHandler}>{isSavingText}</Button>
-                  <Button variant="contained" size="small" color="primary" startIcon={<PrintIcon />} onClick={onPrintHandler}>Imprimir</Button>
+                  <Button variant="contained" size="small" color="primary" startIcon={<PrintIcon />} onClick={onPrintHandler}>{STRINGS.PRINT}</Button>
 
                 </Stack>
                 :
-                <Typography variant="h6" noWrap component="div" color="black" flex="4">
-                  {"Editor de formas precodificadas"}
-                </Typography>
+                <>
+                  {
+                    hidden ?
+                      <Typography variant="h6" noWrap component="div" color="black" flex="4">
+                        {STRINGS.FORM_EDITOR}
+                      </Typography> :
+                      <GitlabHeader />
+                  }
+                </>
             }
           </Toolbar>
         </AppBar>
@@ -216,7 +229,7 @@ export default function TDrawer({ children }: TDrawerProps) {
           </Stack>
         </Main>
 
-      </Box>
+      </Box >
 
     </>
   );

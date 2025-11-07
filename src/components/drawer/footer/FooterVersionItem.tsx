@@ -15,6 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Box, Menu, Stack, ToggleButton, Typography, type ToggleButtonProps } from "@mui/material";
 import { useEffect, useRef, useState, type FC, type MouseEvent } from "react";
+import { STRINGS } from "@/constants/strings";
 
 
 interface Props extends Omit<ToggleButtonProps, "children" | "id"> {
@@ -139,7 +140,7 @@ export const FooterVersionItem: FC<Props> = ({ title, id, value, totalItems, sx,
                         popupState={popupStateHandler}
                         onClick={onEditVersionHandler}
                         icon={<EditIcon color="primary" fontSize="small" />}
-                        title="Editar"
+                        title={STRINGS.EDIT}
                         sx={{ "&:hover": { bgcolor: "#eaf6fb" } }}
                       />
                       {totalItems > 1 &&
@@ -147,7 +148,7 @@ export const FooterVersionItem: FC<Props> = ({ title, id, value, totalItems, sx,
                           popupState={popupStateHandler}
                           onClick={onDeleteHandler}
                           icon={<DeleteIcon color="error" fontSize="small" />}
-                          title="Eliminar"
+                          title={STRINGS.DELETE}
                           sx={{ "&:hover": { bgcolor: " #fbeaea" } }} />}
                     </Menu>
                   }

@@ -1,6 +1,7 @@
 import { Divider, Stack, Typography } from "@mui/material"
 import logo1 from "@/assets/logo1.svg"
 import logo2 from "@/assets/logo2.svg"
+import { STRINGS } from "@/constants/strings";
 
 
 
@@ -14,8 +15,8 @@ const Logo = () => {
       </Stack>
 
       <Stack direction="column" flex="1" justifyContent="center" gap={1} >
-        <Typography variant="h4" textAlign="center"> SIRECAT</Typography>
-        <Typography variant="textTitles" textAlign="center">Sistema de Información Registral y de Catastro  e Información Territorial</Typography>
+        <Typography variant="h4" textAlign="center">{STRINGS.SIRECAT_TITLE}</Typography>
+        <Typography variant="textTitles" textAlign="center">{STRINGS.SIRECAT_SUBTITLE}</Typography>
       </Stack>
     </Stack >
   )

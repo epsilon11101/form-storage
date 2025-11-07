@@ -3,7 +3,8 @@ import "@fontsource/poppins/700.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-
+import { esES } from '@mui/material/locale';
+import { esES as DPesEs } from '@mui/x-date-pickers/locales';
 
 import { createTheme, type Palette, type PaletteColor } from '@mui/material/styles'
 
@@ -59,6 +60,24 @@ declare module '@mui/material/Button' {
     focus?: true
     accent?: true
     titleOutline?: true
+  }
+}
+declare module '@mui/x-date-pickers/DatePicker' {
+  interface DatePickerPropsColorOverrides {
+    tertiary?: true
+    focus?: true
+    accent?: true
+    titleOutline?: true
+  }
+}
+
+declare module '@mui/material/TextField' {
+  interface TextFieldPropsColorOverrides {
+    tertiary?: true
+    focus?: true
+    accent?: true
+    titleOutline?: true
+
   }
 }
 
@@ -247,5 +266,5 @@ export const theme = createTheme({
     focus: FOCUS,
     accent: ACCENT,
     titleOutline: TITLE_OUTLINE,
-  },
-})
+  }
+}, esES, DPesEs)

@@ -5,6 +5,7 @@ import type { Props } from "./interface"
 import { TDialogActions } from "../ui/dialog/TDialogActions"
 import { useCreateGroup } from "@/api/hooks/useGroups";
 import { TProgress } from "../ui/TProgress"
+import { STRINGS } from "@/constants/strings";
 
 
 
@@ -49,7 +50,7 @@ const NewProjectDialog: FC<Props> = ({ title, open, onClose }) => {
       }
     >
       <Stack direction="column" gap={2} pt={1}>
-        <TextField value={name} label="Nombre Proyecto" placeholder="Nombre de Proyecto"
+        <TextField value={name} label={STRINGS.PROJECT_NAME_LABEL} placeholder={STRINGS.PROJECT_NAME_PLACEHOLDER}
           onChange={onChangeHandler}
         />
       </Stack>
@@ -58,7 +59,6 @@ const NewProjectDialog: FC<Props> = ({ title, open, onClose }) => {
 }
 
 export default NewProjectDialog
-
 
 
 

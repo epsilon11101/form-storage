@@ -3,9 +3,14 @@ import TList from "../ui/list/TList"
 import type { FolderStructureType } from "../ui/list/types"
 import { useMemo } from "react"
 import { TProgress } from "../ui/TProgress"
+import { usePathName } from "@/hooks/usePathName"
+
+
 
 
 export const DrawerContent = () => {
+  const { hidden } = usePathName()
+  if (!hidden) return <DrawerContentGitlab />
 
   const { data, isPending } = useGetGroups()
 
@@ -31,10 +36,11 @@ export const DrawerContent = () => {
     <TList jsonFolders={fetchedData} />
   </TProgress>
 
-
-
 }
 
+const DrawerContentGitlab = () => {
+  return null
+}
 
 //
 // jsonFolders={[
